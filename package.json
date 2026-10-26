@@ -1,0 +1,33 @@
+{
+  "name": "@local/paper-skin",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Blockade Orange — Division-style HUD skin for the Harness Web UI: translucent gray floating panels, crisis-orange focus, Borda typography (local use), and HUD chrome.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "fonts/*"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  }
+}
