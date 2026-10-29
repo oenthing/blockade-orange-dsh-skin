@@ -181,7 +181,7 @@ html:root body[data-ds-dark-theme] {
   --dsw-alias-state-business-tertiary: rgba(232, 134, 42, 0.16);
   --dsw-alias-interactive-bg-hover-accent: rgba(255, 127, 0, 0.16);
   --hud-selection: rgba(255, 127, 0, 0.16);
-  --hud-main-panel: rgba(16, 17, 20, 0.42);
+  --hud-main-panel: rgba(16, 17, 20, 0.50);
   --hud-bracket: rgba(255, 255, 255, 0.18);
   --hud-node: rgba(255, 255, 255, 0.30);
   --hud-scrim: radial-gradient(130% 120% at 50% 0%, rgba(10, 11, 14, 0.12), rgba(5, 6, 8, 0.34));
@@ -226,8 +226,8 @@ html:root body[data-ds-dark-theme] {
   /* Frosted plate: light gradient + real backdrop blur, the material the
      reference menus use for their panels. */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035));
-  backdrop-filter: blur(14px) saturate(125%);
-  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.10),
     inset 0 -1px 0 rgba(0, 0, 0, 0.35),
@@ -309,7 +309,9 @@ div:has(> [data-shell-overlay]) {
   box-sizing: border-box;
   /* Sidebar open/close: the frame animates the grid columns, so the easing and
      duration here decide how the left panel moves. */
-  transition: grid-template-columns 235ms cubic-bezier(0.25, 0.9, 0.25, 1);
+  /* Shorter than before: a layout-driven animation needs fewer frames to stay
+     smooth, and the eye reads 190ms as snappier anyway. */
+  transition: grid-template-columns 190ms cubic-bezier(0.3, 0.85, 0.25, 1);
   /* Column gap only: the frame is a two-row grid (main row + shell.bottom
      strip), and a row gap would stack on top of the padding, making the
      bottom seam twice as thick as the top one. */
@@ -376,8 +378,8 @@ html:root body[data-hud-dock-expanded] [data-sidebar-right-panel],
 html:root body[data-hud-dock-expanded] [class*="_rightbarCol"] {
   background: rgba(15, 16, 19, 0.90) !important;
   background-image: none !important;
-  backdrop-filter: blur(10px) saturate(110%);
-  -webkit-backdrop-filter: blur(10px) saturate(110%);
+  backdrop-filter: blur(8px) saturate(108%);
+  -webkit-backdrop-filter: blur(8px) saturate(108%);
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35) !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -536,7 +538,7 @@ html:root body :is(
   .dsh-hud-stats__row,
   [class*="_footArea"] button
 ) svg {
-  transition: transform 140ms cubic-bezier(0.22, 0.88, 0.24, 1), color 140ms ease;
+  transition: transform 150ms cubic-bezier(0.22, 0.88, 0.24, 1), color 150ms ease;
 }
 
 html:root body :is(
@@ -574,7 +576,7 @@ html:root body :is(
   .dsh-hud-settings__btn,
   .dsh-hud-settings__reset,
   [class*="_footArea"] button,
-  [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]),
+  [data-hud-new-session],
   [class*="_overlay"]:has([class*="_navList"]) :is(button, [role="button"], select, [class*="_preset"], [class*="_tile"])
 ) {
   transition: color 150ms ease, background-color 150ms ease;
@@ -592,7 +594,7 @@ html:root body :is(
   .dsh-hud-settings__btn,
   .dsh-hud-settings__reset,
   [class*="_footArea"] button,
-  [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]),
+  [data-hud-new-session],
   [class*="_overlay"]:has([class*="_navList"]) :is(button, [role="button"], select, [class*="_preset"], [class*="_tile"])
 ) {
   transform-origin: left center;
@@ -612,7 +614,7 @@ html:root body :is(
   .dsh-hud-settings__btn,
   .dsh-hud-settings__reset,
   [class*="_footArea"] button,
-  [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]),
+  [data-hud-new-session],
   [class*="_overlay"]:has([class*="_navList"]) :is(button, [role="button"], select, [class*="_preset"], [class*="_tile"])
 ):hover {
   color: var(--dsw-alias-label-primary);
@@ -630,7 +632,7 @@ html:root body :is(
   .dsh-hud-settings__btn,
   .dsh-hud-settings__reset,
   [class*="_footArea"] button,
-  [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]),
+  [data-hud-new-session],
   [class*="_overlay"]:has([class*="_navList"]) :is(button, [role="button"], select, [class*="_preset"], [class*="_tile"])
 ):hover {
   transform: scale(1.015);
@@ -680,20 +682,17 @@ html:root body [role="option"]:hover > * {
 
 /* One rule for every bar animation, so no surface is left without it. */
 html:root body [role="treeitem"][aria-selected]:hover::after,
-html:root body [role="treeitem"][aria-selected="true"]::after,
 html:root body [class*="_navCell"]:hover::after,
-html:root body [class*="_navCell"][class*="active"]::after,
 html:root body [role="menuitem"]:hover::after,
 html:root body [role="option"]:hover::after,
 html:root body [data-dockkit-tab]:hover::after,
-html:root body [data-dockkit-tab][aria-selected="true"]::after,
-html:root body [aria-current="true"]::after,
 html:root body [class*="_panelRow"]:hover::after,
-html:root body [class*="_panelRow"][class*="active"]::after,
 html:root body [class*="_footArea"] button:hover::after,
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]):hover::after,
+html:root body [data-hud-new-session]:hover::after,
 html:root body .dsh-hud-settings__row:hover::after {
   transform-origin: left center;
+  /* Hover is a real state change, so this animation always replays: the bar
+     draws itself from the left each time the pointer enters a row. */
   animation: hud-bar-draw 200ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
 }
 
@@ -729,7 +728,7 @@ html:root body :is(
   .dsh-hud-settings__btn,
   .dsh-hud-settings__reset,
   [class*="_footArea"] button,
-  [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]),
+  [data-hud-new-session],
   [class*="_overlay"]:has([class*="_navList"]) :is(button, [role="button"], select, [class*="_preset"], [class*="_tile"])
 ):active {
   transform: scale(0.995);
@@ -874,6 +873,597 @@ html:root body [data-chat-flow-kind] :not(pre) > code {
   }
 }
 
+/* Respect the OS "reduce transparency" preference: blur is the expensive part,
+   and a more opaque fill reads better for those users anyway. */
+@media (prefers-reduced-transparency: reduce) {
+  html:root body [data-slot="conversation.composer"] [class*="_card"],
+  html:root body [data-sidebar-right-panel],
+  html:root body [data-sidebar-right-panel="fullscreen"],
+  html:root body [class*="_overlay"]:has([class*="_navList"]) > [class*="_panel"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Collapsed sidebar: drop the 3D tilt. On a narrow rail the perspective makes
+   the visual box and the hit area disagree, which can make the expand control
+   unclickable (reported on Windows with display scaling). */
+html:root body[data-sidebar-collapsed] [class*="_sidebarCol"],
+html:root body [data-sidebar-collapsed] [class*="_sidebarCol"],
+html:root body[data-sidebar-state="collapsed"] [class*="_sidebarCol"],
+html:root body [data-sidebar-state="collapsed"] [class*="_sidebarCol"] {
+  transform: none !important;
+  transform-origin: 0% 50%;
+}
+
+/* Flow HUD: our own node inside the sidebar column, so it takes part in the
+   layout instead of covering the session list. */
+/* Two classes beat the single-class base rule on their own, so no !important. */
+.dsh-hud-stats.dsh-hud-inline {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: auto;
+  min-width: 0;
+  margin: 14px 6px 4px;
+  transform: none;
+  clip-path: none;
+  background: var(--dsw-specific-sidebar-fill);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.dsh-hud-stats__list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* While the layout is animating, pause everything that repaints the whole
+   window: the contour sweep and the composer's backdrop blur. */
+html:root body [data-animating]::after {
+  animation-play-state: paused !important;
+}
+
+html:root body [data-animating] [data-slot="conversation.composer"] [class*="_card"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Settle flash: one short accent ring when a side panel finishes resizing, the
+   way the reference menus finish their slide with a lit edge. */
+@keyframes hud-settle-ring {
+  from { box-shadow: inset 0 0 0 1px rgba(255, 127, 0, 0.26), inset 0 0 18px rgba(255, 127, 0, 0.10); }
+  to { box-shadow: inset 0 0 0 1px rgba(255, 127, 0, 0), inset 0 0 18px rgba(255, 127, 0, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body[data-hud-left-settled] [class*="_sidebarCol"],
+  html:root body[data-hud-right-settled] [class*="_rightbarCol"] {
+    animation: hud-settle-ring 240ms ease-out both;
+  }
+}
+
+/* ── Micro-interactions ──────────────────────────────────────────────────── */
+/* Send button: sinks while pressed and emits one ripple. */
+@keyframes hud-ripple {
+  from { opacity: 0.55; transform: scale(0.25); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+
+html:root body [data-slot="conversation.composer"] button[class*="_primary"],
+html:root body [data-slot="conversation.composer"] button[aria-label*="Send" i] {
+  position: relative;
+  overflow: hidden;
+  transition: transform 90ms ease;
+}
+
+html:root body [data-slot="conversation.composer"] button[class*="_primary"]::after,
+html:root body [data-slot="conversation.composer"] button[aria-label*="Send" i]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 70%);
+}
+
+html:root body [data-slot="conversation.composer"] button[class*="_primary"]:active,
+html:root body [data-slot="conversation.composer"] button[aria-label*="Send" i]:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body [data-slot="conversation.composer"] button[class*="_primary"]:active::after,
+  html:root body [data-slot="conversation.composer"] button[aria-label*="Send" i]:active::after {
+    animation: hud-ripple 260ms ease-out;
+  }
+}
+
+/* HUD status dot: breathes while a turn runs, double-flashes on error. */
+@keyframes hud-node-breathe {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 127, 0, 0.45); }
+  50% { opacity: 0.55; box-shadow: 0 0 0 4px rgba(255, 127, 0, 0); }
+}
+
+@keyframes hud-node-error {
+  0%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body .dsh-hud-stats__status[data-state="active"] {
+    background: var(--dsw-alias-brand-primary);
+    animation: hud-node-breathe 1.6s ease-in-out infinite;
+  }
+
+  html:root body .dsh-hud-stats__status[data-state="error"] {
+    background: var(--dsw-alias-state-error-primary);
+    animation: hud-node-error 900ms ease-in-out 2;
+  }
+}
+
+/* Settings sections slide in from the right when you switch category. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hud-section-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_options"] {
+    animation: hud-section-in 190ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
+  }
+}
+
+/* ── Lite mode / idle ──────────────────────────────────────────────────────
+   One switch for weak GPUs: no contour sweep, no backdrop blur, no looping
+   pulses. Idle does the same automatically while the window is hidden. */
+html:root body[data-hud-lite]::after,
+html:root body[data-hud-idle]::after {
+  animation-play-state: paused !important;
+}
+
+html:root body[data-hud-lite] [data-slot="conversation.composer"] [class*="_card"],
+html:root body[data-hud-lite] [data-sidebar-right-panel="fullscreen"],
+html:root body[data-hud-lite] [class*="_overlay"]:has([class*="_navList"]) > [class*="_panel"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html:root body[data-hud-lite] .dsh-hud-stats__status[data-state="active"],
+html:root body[data-hud-lite] .dsh-hud-stats__bar::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html:root body[data-hud-lite] [class*="_entry"],
+html:root body[data-hud-lite] [class*="_overlay"]:has([class*="_navList"]) [class*="_options"] {
+  animation: none !important;
+}
+
+/* Background light switch: hides the sweeping band but keeps the contour map. */
+html:root[data-hud-lights="off"]::after {
+  display: none !important;
+}
+
+/* Contour switch. Off hides both contour layers (map and sweep) and hands the
+   background to a user variable, so any wallpaper can be set:
+     document.documentElement.style.setProperty('--hud-bg', 'url("...")') */
+html:root[data-hud-contours="off"] body::after,
+html:root[data-hud-contours="off"]::after {
+  display: none !important;
+}
+
+html:root body {
+  background-image: var(--hud-bg, none);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Custom background field in the settings page. */
+.dsh-hud-settings__bg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.dsh-hud-settings__bg .dsh-hud-settings__num {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.dsh-hud-settings__file {
+  flex: none;
+  width: 88px;
+  font-size: 10px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+/* Header controls (sidebar toggle, new session, utilities): same hover bar as
+   every other interactive surface. */
+html:root body button[class*="_iconButton"],
+html:root body button[aria-label="打开侧边栏"],
+html:root body button[aria-label="新建会话"],
+html:root body button[aria-label*="sidebar" i] {
+  position: relative;
+}
+
+html:root body button[class*="_iconButton"]::after,
+html:root body button[aria-label="打开侧边栏"]::after,
+html:root body button[aria-label="新建会话"]::after,
+html:root body button[aria-label*="sidebar" i]::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  background: var(--dsw-alias-brand-primary);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+html:root body button[class*="_iconButton"]:hover::after,
+html:root body button[aria-label="打开侧边栏"]:hover::after,
+html:root body button[aria-label="新建会话"]:hover::after,
+html:root body button[aria-label*="sidebar" i]:hover::after {
+  opacity: 1;
+}
+
+/* Settings nav: no scroll rail. The list is short and the rail sat right next
+   to the level-1 items. */
+html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_navList"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_navList"]::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* ── Windows ───────────────────────────────────────────────────────────────
+   DWM acrylic already blurs what is behind the window, so stacking our own
+   backdrop blur on top doubles the cost for little visual gain. Hairlines are
+   also nudged to 1px: 0.5px can disappear at 125%/150% display scaling. */
+html:root[data-os="win"] [data-slot="conversation.composer"] [class*="_card"],
+html:root[data-os="win"] [data-sidebar-right-panel],
+html:root[data-os="win"] [data-sidebar-right-panel="fullscreen"],
+html:root[data-os="win"] [class*="_overlay"]:has([class*="_navList"]) > [class*="_panel"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html:root[data-os="win"] [data-slot="conversation.composer"] [class*="_card"] {
+  background: linear-gradient(180deg, rgba(28, 29, 33, 0.92), rgba(20, 21, 24, 0.88));
+}
+
+html:root[data-os="win"] [class*="_sidebarCol"],
+html:root[data-os="win"] [class*="_centerCol"],
+html:root[data-os="win"] [class*="_rightbarCol"],
+html:root[data-os="win"] .dsh-hud-stats {
+  box-shadow: none;
+}
+
+/* Nothing loops while the window is in the background. */
+html:root body[data-hud-idle] *,
+html:root body[data-hud-idle] *::before,
+html:root body[data-hud-idle] *::after {
+  animation-play-state: paused !important;
+}
+
+/* Right dock "add panel" entries: dressed exactly like the left sidebar rows —
+   grey plate, four corner ticks, 3px bar on hover. */
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]) {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"])::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  opacity: 0.45;
+  color: var(--dsw-alias-label-secondary);
+  background:
+    linear-gradient(currentColor, currentColor) 0 0 / 3px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 100% 0 / 3px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 0 100% / 3px 3px no-repeat,
+    linear-gradient(currentColor, currentColor) 100% 100% / 3px 3px no-repeat;
+}
+
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"])::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  pointer-events: none;
+  background: var(--dsw-alias-brand-primary);
+  opacity: 0;
+  transition: opacity 130ms ease;
+}
+
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]):hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--dsw-alias-label-primary);
+}
+
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]):hover::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]):hover::after {
+    transform-origin: left center;
+    animation: hud-bar-draw 200ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
+  }
+}
+
+/* Every remaining surface that only faded its bar now draws it too. */
+@media (prefers-reduced-motion: no-preference) {
+  html:root body [class*="_overlay"]:has([class*="_navList"])
+    :is(button:not([class*="_navCell"]), [role="button"]:not([class*="_navCell"]), select, [class*="_preset"], [class*="_tile"]):hover::after,
+  html:root body [data-slot="main"]
+    :is(button:not([role="switch"]):not([aria-checked]), [role="button"]:not([role="switch"]):not([aria-checked]), [role="option"], [role="menuitem"]):hover::after,
+  html:root body [data-slot="main"] [class*="_rows"] > [class*="_row"]:hover::after,
+  html:root body [data-slot="main"] [class*="_optionsRow"]:hover::after,
+  html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_toggleRow"]:hover::after,
+  html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_optionsRow"]:hover::after,
+  html:root body .dsh-hud-settings__btn:hover::after {
+    transform-origin: left center;
+    animation: hud-bar-draw 200ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:root body [data-slot="main"] [class*="_rows"] > [class*="_row"]:hover::after,
+  html:root body [data-slot="main"] [class*="_optionsRow"]:hover::after {
+    animation: none;
+  }
+}
+
+/* The same hover lift on every surface that has a bar. */
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]),
+html:root body [data-slot="main"] [class*="_rows"] > [class*="_row"],
+html:root body [class*="_overlay"]:has([class*="_navList"])
+  :is(button:not([class*="_navCell"]), [role="button"]:not([class*="_navCell"]), [class*="_preset"], [class*="_tile"]) {
+  transform-origin: left center;
+  transition: transform 150ms cubic-bezier(0.22, 0.88, 0.24, 1), color 150ms ease, background-color 150ms ease;
+}
+
+html:root body [class*="_entry"]:not([class*="_entry"] [class*="_entry"]):hover,
+html:root body [data-slot="main"] [class*="_rows"] > [class*="_row"]:hover,
+html:root body [class*="_overlay"]:has([class*="_navList"])
+  :is(button:not([class*="_navCell"]), [role="button"]:not([class*="_navCell"]), [class*="_preset"], [class*="_tile"]):hover {
+  transform: scale(1.012);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:root body [class*="_entry"]:hover,
+  html:root body [data-slot="main"] [class*="_rows"] > [class*="_row"]:hover {
+    transform: none;
+  }
+}
+
+/* Right dock file list: rows are button.h_iMMG_row inside li.h_iMMG_item. */
+html:root body button[class*="iMMG_row"] {
+  position: relative;
+  border-radius: 2px;
+  transform-origin: left center;
+  transition: transform 150ms cubic-bezier(0.22, 0.88, 0.24, 1), color 150ms ease, background-color 150ms ease;
+}
+
+html:root body button[class*="iMMG_row"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  background: var(--dsw-alias-brand-primary);
+  opacity: 0;
+  transition: opacity 130ms ease;
+}
+
+html:root body button[class*="iMMG_row"]:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--dsw-alias-label-primary);
+  transform: scale(1.012);
+}
+
+html:root body button[class*="iMMG_row"]:hover::after,
+html:root body button[class*="iMMG_row"][aria-selected="true"]::after,
+html:root body button[class*="iMMG_row"][class*="ctive"]::after,
+html:root body button[class*="iMMG_row"][aria-current="true"]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body button[class*="iMMG_row"]:hover::after {
+    transform-origin: left center;
+    animation: hud-bar-draw 200ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
+  }
+}
+
+/* Dock tab strip: the active tab keeps its bar. */
+html:root body [role="tab"][class*="_tabActive_"],
+html:root body [class*="_tab_"][class*="_tabActive_"] {
+  position: relative;
+}
+
+html:root body [role="tab"][class*="_tabActive_"]::after,
+html:root body [class*="_tab_"][class*="_tabActive_"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  background: var(--dsw-alias-brand-primary);
+}
+
+/* Diagnostic: strip every custom paint from the right column so the host's own
+   boxes can be compared with ours.
+     document.body.dataset.hudNoDockstyle = 'true'    (remove with delete) */
+html:root body[data-hud-no-dockstyle] [class*="_rightbarCol"] {
+  background: none !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Window blur dim. */
+.dsh-hud-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: rgba(4, 5, 7, 0);
+  transition: background-color 220ms ease;
+}
+
+html:root[data-hud-blur] .dsh-hud-dim {
+  background: rgba(4, 5, 7, 0.34);
+}
+
+/* Streaming cursor: a block that blinks at the end of the live answer. */
+@keyframes hud-cursor-blink {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0.15; }
+}
+
+
+
+/* HUD values roll up when they change. */
+@keyframes hud-value-roll {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body .dsh-hud-stats__value.is-rolling {
+    animation: hud-value-roll 220ms cubic-bezier(0.22, 0.88, 0.24, 1);
+  }
+}
+
+/* Streaming cursor block. */
+@keyframes hud-cursor-blink {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0.15; }
+}
+
+.dsh-hud-cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: var(--dsw-alias-brand-primary);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dsh-hud-cursor {
+    animation: hud-cursor-blink 1s steps(1, end) infinite;
+  }
+}
+
+/* Running tool card: a light travels along its top edge while the call executes.
+   Driven by the host's data-phase marker, so it disappears on its own. */
+@keyframes hud-tool-run {
+  from { background-position: -40% 0; }
+  to { background-position: 140% 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body [data-phase="active"] [class*="_callRow"] {
+    position: relative;
+  }
+
+  html:root body [data-phase="active"] [class*="_callRow"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    pointer-events: none;
+    background-image: linear-gradient(90deg, transparent 0%, rgba(255, 127, 0, 0.85) 50%, transparent 100%);
+    background-size: 40% 100%;
+    background-repeat: no-repeat;
+    background-position: -40% 0;
+    animation: hud-tool-run 1.9s linear infinite;
+  }
+}
+
+/* Boot-in, reference style: the columns slide in horizontally from their own
+   edge and their leading edge flashes once, then the composer and HUD settle. */
+/* Use the independent translate/scale properties: animating transform would
+   override each column's rotateY tilt and the panel would arrive flat. */
+@keyframes hud-boot-in-left {
+  from { opacity: 0; translate: -16px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes hud-boot-in-right {
+  from { opacity: 0; translate: 18px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes hud-boot-in-fade {
+  from { opacity: 0; scale: 0.994; }
+  to { opacity: 1; scale: 1; }
+}
+
+@keyframes hud-boot-edge {
+  0% { box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0); }
+  35% { box-shadow: inset -1px 0 0 rgba(255, 190, 120, 0.55); }
+  100% { box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root .dsh-hud-booting[class*="_sidebarCol"] {
+    animation:
+      hud-boot-in-left 380ms cubic-bezier(0.16, 1, 0.3, 1) both,
+      hud-boot-edge 520ms ease-out both;
+  }
+
+  html:root .dsh-hud-booting[class*="_centerCol"] {
+    animation: hud-boot-in-fade 420ms cubic-bezier(0.22, 0.88, 0.24, 1) 60ms both;
+  }
+
+  html:root .dsh-hud-booting[class*="_rightbarCol"] {
+    animation:
+      hud-boot-in-right 380ms cubic-bezier(0.16, 1, 0.3, 1) 110ms both,
+      hud-boot-edge 520ms ease-out 110ms both;
+  }
+
+  html:root .dsh-hud-booting[class*="_card"] {
+    animation: hud-boot-in-fade 400ms cubic-bezier(0.22, 0.88, 0.24, 1) 180ms both;
+  }
+
+  html:root .dsh-hud-booting.dsh-hud-stats {
+    animation: hud-boot-in-fade 380ms cubic-bezier(0.22, 0.88, 0.24, 1) 230ms both;
+  }
+}
+
 /* ── Conversation status strip ───────────────────────────────────────────────
    The header row becomes a slim instrument strip: a hairline under it, a dim
    plate behind it, and the session title set small and tracked. */
@@ -904,8 +1494,9 @@ html:root body [class*="_header"]:has([class*="_titleRow"]) [class*="_headerUtil
 
 html:root body [class*="_centerCol"] {
   border-radius: 4px;
+  /* No backdrop blur here: this is the largest surface, and re-sampling it on
+     every scroll frame was the main cost. The fill is a touch denser instead. */
   background: var(--hud-main-panel);
-  backdrop-filter: blur(3px) saturate(108%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     var(--dsw-elevation-panel);
@@ -941,22 +1532,19 @@ html:root body::after {
   filter: sepia(1) saturate(3.2) hue-rotate(-12deg) brightness(1.05);
 }
 
-/* A moving amber band, masked by the contours, so only the lines light up as
-   it sweeps from right to left. */
-@keyframes hud-sweep-band {
-  from { background-position: 160% 0; }
-  to { background-position: -60% 0; }
+/* Sweep light: a masked container with a band that moves by transform, so the
+   compositor does the work instead of re-rasterising a masked background. */
+@keyframes hud-sweep-slide {
+  from { transform: translateX(-45vw); }
+  to { transform: translateX(115vw); }
 }
 
-html:root::after {
-  content: "";
+.dsh-hud-sweep {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(90deg, transparent 38%, rgba(255, 127, 0, 0.85) 50%, transparent 62%);
-  background-size: 220% 100%;
-  background-position: 160% 0;
+  overflow: hidden;
   mask-image: var(--hud-contours, url(${CONTOURS}));
   -webkit-mask-image: var(--hud-contours, url(${CONTOURS}));
   mask-size: 135% auto;
@@ -965,15 +1553,29 @@ html:root::after {
   -webkit-mask-position: 50% 35%;
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
-  mask-mode: alpha;
-  animation: hud-sweep-band 9s linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html:root body::after,
-  html:root::after {
-    animation: none;
+.dsh-hud-sweep__band {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  width: 40vw;
+  background: linear-gradient(90deg, rgba(255, 127, 0, 0) 0%, rgba(255, 127, 0, 0.85) 50%, rgba(255, 127, 0, 0) 100%);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dsh-hud-sweep__band {
+    animation: hud-sweep-slide 11s linear infinite;
   }
+}
+
+html:root body[data-hud-lite] .dsh-hud-sweep,
+html:root body[data-hud-idle] .dsh-hud-sweep,
+html:root[data-hud-lights="off"] .dsh-hud-sweep,
+html:root[data-hud-contours="off"] .dsh-hud-sweep {
+  display: none;
 }
 
 html:root body::before {
@@ -1013,16 +1615,7 @@ html:root body [class*="_centerCol"]::before {
     radial-gradient(circle, var(--hud-node) 0 1.2px, transparent 1.9px) 100% 100% / 4px 4px no-repeat;
 }
 
-html:root body:has([data-phase="active"]) [class*="_centerCol"]::after {
-  content: "";
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 64px;
-  height: 2px;
-  pointer-events: none;
-  background: var(--dsw-alias-brand-primary);
-}
+
 
 /* ── HUD stat cluster (bottom-left, above the account row) ─────────────────
    Mirrors the host's [data-composer-stat] readouts into a Division-style
@@ -1040,12 +1633,11 @@ html:root body:has([data-phase="active"]) [class*="_centerCol"]::after {
   border-radius: 3px;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
-  /* A section of the sidebar, not a card on top of it: no own elevation, no
-     radius, one hairline to separate it from the session list. */
-  background: var(--dsw-specific-sidebar-fill);
+  background: rgba(15, 16, 19, 0.95);
   border-top: 0.5px solid var(--dsw-alias-border-l2);
   box-shadow: none;
   backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .dsh-hud-stats::before {
@@ -1178,9 +1770,25 @@ html:root body:has([data-phase="active"]) [class*="_centerCol"]::after {
 }
 
 .dsh-hud-settings__btn.is-on {
+  position: relative;
   border-color: var(--dsw-alias-brand-primary);
   color: var(--dsw-alias-brand-primary);
   background: var(--hud-selection);
+}
+
+/* The active control carries the same bar as every other selected row. */
+.dsh-hud-settings__btn.is-on::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  /* The generic "settings button" bar rule is far more specific and sets
+     opacity 0; this must win for an already-on control. */
+  opacity: 1 !important;
+  background: var(--dsw-alias-brand-primary);
 }
 
 .dsh-hud-settings__num {
@@ -1224,7 +1832,7 @@ html:root body [class*="_overlay"]:has([class*="_navList"]) > [class*="_panel"] 
        document.documentElement.style.setProperty('--hud-settings-blur', '8px') */
   background: var(--hud-settings-fill, rgba(10, 11, 14, 0.22));
   background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%);
-  backdrop-filter: blur(var(--hud-settings-blur, 6px)) saturate(110%);
+  backdrop-filter: blur(var(--hud-settings-blur, 4px)) saturate(110%);
   /* Tilted like the reference menus: turned in towards the scene and tipped
      back a touch, with a real drop shadow so the sheet reads as an object.
        --hud-settings-tilt / --hud-settings-tilt-x tune both axes live. */
@@ -1315,13 +1923,13 @@ html:root body [class*="_overlay"]:has([class*="_navList"]) [class*="_header"] {
 /* ── Main interface polish: sidebar chrome + composer shell ──────────────── */
 /* "New session" becomes a menu bar with an orange hover edge, matching the
    session rows rather than looking like a web button. */
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]) {
+html:root body [data-hud-new-session] {
   border-radius: 0 !important;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
 }
 
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]):hover {
+html:root body [data-hud-new-session]:hover {
   background: rgba(255, 127, 0, 0.12);
 }
 
@@ -1359,7 +1967,7 @@ html:root body div[class*="_entryCell"] {
 html:root body div[class*="_entry"] {
   transform: rotateY(-3deg) rotateX(0.4deg);
   transform-origin: 100% 50%;
-  transition: transform 140ms ease, background-color 140ms ease;
+  transition: transform 150ms ease, background-color 150ms ease;
 }
 
 html:root body div[class*="_entry"]:hover {
@@ -1377,6 +1985,12 @@ html:root body div[class*="_entry"]:hover {
 html:root body [data-animating] [class*="_centerCol"] {
   backdrop-filter: none !important;
 }
+
+/* Selection motion: the bar draws itself from the left when a row becomes the
+   selected one, and a soft flash runs once over the row. One-shot only. */
+
+
+
 
 /* Selection motion: the bar draws itself from the left when a row becomes the
    selected one, and a soft flash runs once over the row. One-shot only. */
@@ -1411,6 +2025,93 @@ html:root body [role="treeitem"][aria-selected="true"] {
   html:root body [data-dockkit-tab][aria-selected="true"]::after,
   html:root body [role="treeitem"][aria-selected="true"] {
     animation: none;
+  }
+}
+
+/* ── One definition for every hover bar ────────────────────────────────────
+   Geometry, colour, timing and the reveal live here only. Each surface just
+   lists its selector, so a change never has to be made in five places. */
+html:root body [role="treeitem"][aria-selected],
+html:root body [class*="_navCell"],
+html:root body [role="menuitem"],
+html:root body [role="option"],
+html:root body [data-dockkit-tab],
+html:root body [class*="_panelRow"],
+html:root body [data-hud-new-session],
+html:root body [class*="_footArea"] button,
+html:root body button[class*="_iconButton"],
+html:root body .dsh-hud-settings__row {
+  position: relative;
+}
+
+html:root body [role="treeitem"][aria-selected]::after,
+html:root body [class*="_navCell"]::after,
+html:root body [role="menuitem"]::after,
+html:root body [role="option"]::after,
+html:root body [data-dockkit-tab]::after,
+html:root body [class*="_panelRow"]::after,
+html:root body [data-hud-new-session]::after,
+html:root body [class*="_footArea"] button::after,
+html:root body button[class*="_iconButton"]::after,
+html:root body .dsh-hud-settings__row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  background: var(--dsw-alias-brand-primary);
+  opacity: 0;
+  transform-origin: left center;
+  transition: opacity 130ms ease;
+}
+
+/* Level 1 navigation reads heavier than level 2 items. */
+html:root body [role="treeitem"][aria-selected]::after,
+html:root body [class*="_navCell"]::after,
+html:root body [class*="_panelRow"]::after,
+html:root body [data-dockkit-tab]::after,
+html:root body [data-hud-new-session]::after,
+html:root body [class*="_footArea"] button::after {
+  height: 3px;
+}
+
+html:root body [role="treeitem"][aria-selected]:hover::after,
+html:root body [class*="_navCell"]:hover::after,
+html:root body [role="menuitem"]:hover::after,
+html:root body [role="option"]:hover::after,
+html:root body [data-dockkit-tab]:hover::after,
+html:root body [class*="_panelRow"]:hover::after,
+html:root body [data-hud-new-session]:hover::after,
+html:root body [class*="_footArea"] button:hover::after,
+html:root body button[class*="_iconButton"]:hover::after,
+html:root body .dsh-hud-settings__row:hover::after,
+html:root body [role="treeitem"][aria-selected="true"]::after,
+html:root body [aria-current="true"]::after,
+html:root body [class*="_navCell"][class*="active"]::after,
+html:root body [class*="_panelRow"][class*="active"]::after,
+html:root body [data-dockkit-tab][aria-selected="true"]::after,
+html:root body [data-dockkit-tab][data-active]::after,
+html:root body [data-dockkit-tab][data-selected]::after,
+html:root body [data-dockkit-tab][class*="active"]::after,
+html:root body [data-dockkit-tab][class*="selected"]::after,
+html:root body [role="tab"][aria-selected="true"]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root body [role="treeitem"][aria-selected]:hover::after,
+  html:root body [class*="_navCell"]:hover::after,
+  html:root body [role="menuitem"]:hover::after,
+  html:root body [role="option"]:hover::after,
+  html:root body [data-dockkit-tab]:hover::after,
+  html:root body [class*="_panelRow"]:hover::after,
+  html:root body [data-hud-new-session]:hover::after,
+  html:root body [class*="_footArea"] button:hover::after,
+  html:root body button[class*="_iconButton"]:hover::after,
+  html:root body .dsh-hud-settings__row:hover::after {
+    animation: hud-bar-draw 200ms cubic-bezier(0.22, 0.88, 0.24, 1) both;
   }
 }
 
@@ -1625,6 +2326,7 @@ html:root body [aria-current="true"] {
 /* Bar weight: level 1 (navigation) is heavier, level 2 (items) is a hairline. */
 html:root body [role="treeitem"][aria-selected]::after,
 html:root body [class*="_navCell"]::after,
+html:root body [class*="_panelRow"]::after,
 html:root body [data-dockkit-tab]::after {
   height: 3px;
 }
@@ -1660,7 +2362,7 @@ html:root body [role="option"]:hover {
 html:root body [role="treeitem"][aria-selected]::before,
 html:root body [class*="_panelRow"]::before,
 html:root body [class*="_footArea"] button::before,
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"])::before {
+html:root body [data-hud-new-session]::before {
   content: "";
   position: absolute;
   inset: 3px;
@@ -1677,11 +2379,11 @@ html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([cl
 
 
 /* New-session button: the same floating bar as the other level-1 rows. */
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]) {
+html:root body [data-hud-new-session] {
   position: relative;
 }
 
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"])::after {
+html:root body [data-hud-new-session]::after {
   content: "";
   position: absolute;
   left: 0;
@@ -1694,7 +2396,7 @@ html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([cl
   transition: opacity 120ms ease;
 }
 
-html:root body [class*="_newSession"]:not([class*="_newSessionContent"]):not([class*="_newSessionLabel"]):not([class*="_newSessionShortcut"]):not([class*="_newSessionLabelMask"]):hover::after {
+html:root body [data-hud-new-session]:hover::after {
   opacity: 1;
 }
 
@@ -1755,6 +2457,11 @@ html:root body [class*="_panelRow"]::after {
   background: var(--dsw-alias-brand-primary);
   opacity: 0;
   transition: opacity 120ms ease;
+}
+
+html:root body [class*="_panelRow"]:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--dsw-alias-label-primary);
 }
 
 html:root body [class*="_panelRow"]:hover::after,
@@ -1942,7 +2649,7 @@ html:root body .dsh-hud-stats {
 }
 
 /* Semantic tones on the readout bars. */
-.dsh-hud-stats__bar[data-tone="good"]::after { background: repeating-linear-gradient(90deg, #47e6dc 0 4px, transparent 4px 6px); }
+.dsh-hud-stats__bar[data-tone="good"]::after { background: repeating-linear-gradient(90deg, var(--dsw-alias-state-success-primary) 0 4px, transparent 4px 6px); }
 .dsh-hud-stats__bar[data-tone="warn"]::after { background: repeating-linear-gradient(90deg, var(--dsw-alias-brand-primary) 0 4px, transparent 4px 6px); }
 .dsh-hud-stats__bar[data-tone="danger"]::after { background: repeating-linear-gradient(90deg, var(--dsw-alias-state-error-primary) 0 4px, transparent 4px 6px); }
 .dsh-hud-stats__bar[data-tone="calm"]::after { background: repeating-linear-gradient(90deg, var(--hud-node) 0 4px, transparent 4px 6px); }
@@ -2265,18 +2972,9 @@ html:root body ::-webkit-scrollbar-thumb:active {
     to { opacity: 1; }
   }
 
-  /* Shell boot-in: the panels arrive in sequence, like the OS drawing itself. */
-  html:root body [class*="_sidebarCol"] {
-    animation: hud-panel-in 200ms ease-out both;
-  }
-
-  html:root body [class*="_centerCol"] {
-    animation: hud-panel-in 240ms ease-out 60ms both;
-  }
-
-  html:root body [class*="_rightbarCol"] {
-    animation: hud-panel-in 240ms ease-out 120ms both;
-  }
+  /* No mount fade on the columns: the host remounts them on layout changes (and
+     our own HUD re-attachment triggers renders), so the animation replays and the
+     whole column blinks. */
 
   /* The running-turn bar draws itself from the left instead of popping in. */
   html:root body:has([data-phase="active"]) [class*="_centerCol"]::after {
@@ -2324,6 +3022,11 @@ html:root body ::-webkit-scrollbar-thumb:active {
       cut: true,
       tilt: 7,
       layer: 2,             // same stacking band as the sidebar, not an overlay
+      lite: false,          // drop the expensive effects on weak GPUs
+      enabled: true,        // master switch: off restores the stock interface
+      lights: true,         // the amber sweep over the contour background
+      contours: true,       // the contour map itself; off leaves a clean canvas
+      bg: '',               // custom background: a CSS image value or a data URL
     };
 
     const HUD_LEGACY_KEYS = ['paper-skin.hud.v8', 'paper-skin.hud.v7', 'paper-skin.hud.v6', 'paper-skin.hud.v5', 'paper-skin.hud.v4', 'paper-skin.hud.v3', 'paper-skin.hud.v2'];
@@ -2405,19 +3108,6 @@ html:root body ::-webkit-scrollbar-thumb:active {
       if (tail) out[out.length - 1].lead = (out[out.length - 1].lead + ' ' + tail).trim();
       return out;
     }
-
-    function splitValue(text) {
-      const match = text.match(/[\d][\d.,]*\s*(?:%|M|K|B)?/);
-      if (!match) return { value: text, unit: '', label: '' };
-      const rest = text.replace(match[0], '').trim();
-      const unitMatch = rest.match(LEADING_UNIT);
-      return {
-        value: match[0].trim(),
-        unit: unitMatch ? unitMatch[0] : '',
-        label: unitMatch ? rest.slice(unitMatch[0].length).trim() : rest,
-      };
-    }
-
     function glyph(kind) {
       const paths = ICONS[kind] || ICONS.generic;
       return h('svg', {
@@ -2434,444 +3124,20 @@ html:root body ::-webkit-scrollbar-thumb:active {
       }, ...paths.map((d) => h('path', { d, key: d })));
     }
 
-    /** Tweens the numeric part of a readout when it changes (game-style roll). */
-    function RollingNumber(props) {
-      const raw = String(props.value);
-      const [display, setDisplay] = React.useState(raw);
-      const previous = React.useRef(raw);
-
-      React.useEffect(() => {
-        const read = (text) => {
-          const match = String(text).match(/[\d][\d.,]*/);
-          return match ? Number(match[0].replace(/,/g, '')) : NaN;
-        };
-        const from = read(previous.current);
-        const to = read(raw);
-        if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) {
-          setDisplay(raw);
-          previous.current = raw;
-          return undefined;
-        }
-        const decimals = /\d\.\d/.test(raw) ? 1 : 0;
-        const start = performance.now();
-        let frame = 0;
-        const step = (now) => {
-          const p = Math.min(1, (now - start) / 320);
-          const eased = 1 - Math.pow(1 - p, 3);
-          const value = from + (to - from) * eased;
-          setDisplay(value.toFixed(decimals));
-          if (p < 1) frame = requestAnimationFrame(step);
-          else previous.current = raw;
-        };
-        frame = requestAnimationFrame(step);
-        return () => cancelAnimationFrame(frame);
-      }, [raw]);
-
-      return h('span', null, display);
-    }
-
-    /** Armour-bar style tone: cache hit is efficiency, the rest is load. */
-    function toneOf(label, unit, value) {
+    /** Tweens the numeric part of a readout when it changes (game-style roll). */    function toneOf(label, unit, value) {
       if (unit !== '%') return null;
       const numeric = parseFloat(value);
       if (!Number.isFinite(numeric)) return null;
       const efficiency = /缓存|cache/i.test(label);
-      if (efficiency) return numeric >= 60 ? 'good' : 'warn';
+      // Cache hit: green only when it is genuinely high, amber below that.
+      if (efficiency) return numeric >= 90 ? 'good' : 'warn';
       if (numeric >= 80) return 'danger';
       if (numeric >= 60) return 'warn';
       return 'calm';
     }
 
-    /** Trend line for the sampled streaming rate; plain SVG, no dependency. */
-    function Sparkline(props) {
-      const points = props.points;
-      if (!points || points.length < 2) return null;
-      const max = Math.max.apply(null, points.concat(1));
-      const step = 100 / (points.length - 1);
-      const path = points.map((value, index) => {
-        const x = index * step;
-        const y = 26 - (value / max) * 22;
-        return (index === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
-      }).join(' ');
-      return h('svg', {
-        className: 'dsh-hud-stats__spark',
-        viewBox: '0 0 100 28',
-        preserveAspectRatio: 'none',
-        'aria-hidden': true,
-      },
-        h('line', { x1: 0, y1: 26.5, x2: 100, y2: 26.5, stroke: 'var(--hud-bracket)', strokeWidth: 0.5, vectorEffect: 'non-scaling-stroke' }),
-        h('path', {
-          d: path,
-          fill: 'none',
-          stroke: 'var(--dsw-alias-brand-primary)',
-          strokeWidth: 1,
-          strokeLinejoin: 'round',
-          vectorEffect: 'non-scaling-stroke',
-        }));
-    }
+    /** Trend line for the sampled streaming rate; plain SVG, no dependency. */    const SEPARATOR = /[·•|]/;
 
-    const SEPARATOR = /[·•|]/;
-
-    function HudStats() {
-      const [rows, setRows] = React.useState([]);
-      const [config, setConfig] = React.useState(readHudConfig);
-      const [box, setBox] = React.useState({});
-      const [pulse, setPulse] = React.useState(0);
-      const [spark, setSpark] = React.useState([]);
-      const sparkRef = React.useRef([]);
-      const [status, setStatus] = React.useState('idle');
-      const [load, setLoad] = React.useState(0);
-      const [glitch, setGlitch] = React.useState(0);
-      const stripRef = React.useRef(null);
-
-      React.useEffect(() => {
-        let last = '';
-        let lastErrors = -1;
-        const read = () => {
-          // A new error surface means a tool call failed: brief signal glitch.
-          const errors = document.querySelectorAll('[data-error]').length;
-          if (lastErrors >= 0 && errors > lastErrors) setGlitch((value) => value + 1);
-          lastErrors = errors;
-          const next = [];
-          document.querySelectorAll('[data-composer-stat]').forEach((node) => {
-            const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
-            if (!text) return;
-            text.split(SEPARATOR).forEach((part) => {
-              const segment = part.trim();
-              if (segment) next.push(segment);
-            });
-          });
-          // Agent state: error wins over running, otherwise idle.
-          const errored = document.querySelectorAll('[data-error]').length > 0;
-          const running = Boolean(document.querySelector('[data-phase="active"]'));
-          setStatus(errored ? 'error' : running ? 'active' : 'idle');
-
-          // Context load: the percent readout that is not the cache hit ratio.
-          let nextLoad = 0;
-          next.forEach((segment) => {
-            if (!/%/.test(segment) || /缓存|cache/i.test(segment)) return;
-            const numeric = parseFloat(segment);
-            if (Number.isFinite(numeric) && numeric > nextLoad) nextLoad = numeric;
-          });
-          setLoad(nextLoad);
-
-          const key = next.join('|');
-          if (key !== last) {
-            const first = last === '';
-            last = key;
-            setRows(next);
-            // One sweep per real refresh; the first paint stays calm.
-            if (!first) {
-              setPulse((value) => value + 1);
-
-              // Sample the streaming rate for the trend line.
-              const rate = next.find((segment) => /tok\/s/i.test(segment));
-              const numeric = rate ? parseFloat(rate) : NaN;
-              if (Number.isFinite(numeric)) {
-                sparkRef.current = sparkRef.current.concat(numeric).slice(-24);
-                setSpark(sparkRef.current);
-              }
-            }
-          }
-        };
-        read();
-        const observer = new MutationObserver(read);
-        observer.observe(document.body, {
-          subtree: true,
-          childList: true,
-          characterData: true,
-          attributes: true,
-          attributeFilter: ['data-phase', 'data-error'],
-        });
-        return () => observer.disconnect();
-      }, []);
-
-      React.useEffect(() => {
-        const sync = () => setConfig(readHudConfig());
-        window.addEventListener('paper-skin:hud', sync);
-        return () => window.removeEventListener('paper-skin:hud', sync);
-      }, []);
-
-      // Resolve the box: width may follow the sidebar, the baseline may follow
-      // the composer, and the account row lifts when asked.
-      React.useEffect(() => {
-        const root = document.documentElement;
-        const measure = () => {
-          const next = {};
-          const column = document.querySelector('[class*="_sidebarCol"]');
-
-          // The panel belongs to the sidebar: no sidebar, no panel.
-          if (column && column.getBoundingClientRect().width < 140) {
-            setBox({ hidden: true });
-            root.style.setProperty('--hud-strip-lift', '0px');
-            return;
-          }
-          if (config.baseline === 'free') {
-            // Vertical position stays where the user put it; horizontal snaps to
-            // the sidebar's inner padding, and the perspective axis moves onto
-            // the sidebar's own left edge so both planes share one vanishing
-            // point.
-            const sidebar = column ? column.getBoundingClientRect() : null;
-            const inset = 12;
-            if (sidebar && sidebar.width > 140) {
-              next.left = Math.round(sidebar.left + inset);
-              next.width = Math.round(sidebar.width - inset * 2);
-              next.axis = Math.round(sidebar.left - next.left);
-              // Share the sidebar's 3D axis point too, not just its x: the panel
-              // sits low in the column, so a centre-of-itself origin makes its
-              // bottom edge diverge from the sidebar's.
-              const height = stripRef.current ? stripRef.current.getBoundingClientRect().height : 0;
-              const hudTop = window.innerHeight - config.bottom - height;
-              next.axisY = Math.round(sidebar.top + sidebar.height / 2 - hudTop);
-            } else {
-              next.left = config.left;
-              if (config.width === 'px') next.width = config.widthPx;
-              next.axis = 0;
-              next.axisY = null;
-            }
-            next.bottom = config.bottom;
-            setBox(next);
-            root.style.setProperty('--hud-strip-lift', '0px');
-            return;
-          }
-
-          if (config.width === 'sidebar') {
-            if (!column) return;
-            const rect = column.getBoundingClientRect();
-            next.left = Math.round(rect.left + 6);
-            next.width = Math.round(rect.width - 12);
-          } else if (config.width === 'px') {
-            next.left = config.left;
-            next.width = config.widthPx;
-          } else {
-            next.left = config.left;
-          }
-
-          let bottom = config.bottom;
-          const card = document.querySelector('[data-slot="conversation.composer"] [class*="_card"]');
-          if (card) {
-            const cardRect = card.getBoundingClientRect();
-            next.composer = {
-              left: Math.round(cardRect.left),
-              width: Math.round(cardRect.width),
-              top: Math.round(cardRect.top),
-            };
-            if (config.baseline === 'composer') {
-              bottom = Math.max(8, Math.round(window.innerHeight - cardRect.bottom));
-            }
-          }
-          if (config.baseline === 'account') {
-            const foot = document.querySelector('[class*="_footArea"]');
-            if (foot) {
-              // Clear the whole account row, not just the column's bottom edge.
-              bottom = Math.max(8, Math.round(window.innerHeight - foot.getBoundingClientRect().top) + (config.rise || 0));
-            } else {
-              bottom = Math.max(8, config.bottom + (config.rise || 0));
-            }
-          }
-          next.bottom = bottom;
-          setBox(next);
-
-          // Lift the account row by writing its margin directly: layout-owned
-          // padding never applied, so measure the row and set the difference.
-          const foot = document.querySelector('[class*="_footArea"]');
-          if (foot) {
-            const height = stripRef.current ? stripRef.current.getBoundingClientRect().height : 0;
-            const current = parseFloat(foot.style.marginBottom) || 0;
-            const footRect = foot.getBoundingClientRect();
-            const base = window.innerHeight - footRect.bottom - current;
-            const needed = bottom + height;
-            const shouldLift = config.lift && config.baseline !== 'account';
-            foot.style.marginBottom = (shouldLift ? Math.max(0, Math.round(needed - base)) : 0) + 'px';
-          }
-          root.style.setProperty('--hud-strip-lift', '0px');
-        };
-
-        measure();
-        const observer = new ResizeObserver(() => measure());
-        const watched = new Set();
-        const attach = () => {
-          const nodes = [
-            document.querySelector('[class*="_sidebarCol"]'),
-            document.querySelector('[class*="_footArea"]'),
-            stripRef.current,
-          ].filter(Boolean);
-          nodes.forEach((node) => {
-            if (watched.has(node)) return;
-            watched.add(node);
-            observer.observe(node);
-          });
-          return nodes.length;
-        };
-        attach();
-        // The shell swaps its DOM when the layout changes (dock fullscreen,
-        // sidebar collapse), which detaches the observed nodes. Re-attach and
-        // re-measure so the panel never stays stuck in the hidden state.
-        const timer = setInterval(() => { attach(); measure(); }, 600);
-        window.addEventListener('resize', measure);
-        return () => {
-          observer.disconnect();
-          clearInterval(timer);
-          window.removeEventListener('resize', measure);
-        };
-      }, [config]);
-
-      // Drag to move: the grip is the only pointer-active part of the panel.
-      const startDrag = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const startX = event.clientX;
-        const startY = event.clientY;
-        const startLeft = typeof box.left === 'number' ? box.left : config.left;
-        const startBottom = typeof box.bottom === 'number' ? box.bottom : config.bottom;
-        const live = { left: startLeft, bottom: startBottom };
-
-        const move = (moveEvent) => {
-          live.left = Math.round(startLeft + (moveEvent.clientX - startX));
-          live.bottom = Math.max(0, Math.round(startBottom - (moveEvent.clientY - startY)));
-          setBox((current) => ({ ...current, left: live.left, bottom: live.bottom }));
-        };
-
-        const end = () => {
-          window.removeEventListener('pointermove', move);
-          window.removeEventListener('pointerup', end);
-          if (Number.isFinite(live.left) && Number.isFinite(live.bottom)) {
-            // Pin it: free placement, so nothing re-anchors it afterwards.
-            writeHudConfig({ baseline: 'free', left: live.left, bottom: live.bottom });
-          }
-        };
-
-        window.addEventListener('pointermove', move);
-        window.addEventListener('pointerup', end);
-      };
-
-      const startResize = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const startX = event.clientX;
-        const startWidth = stripRef.current ? stripRef.current.getBoundingClientRect().width : 200;
-        const move = (moveEvent) => {
-          const width = Math.max(140, Math.round(startWidth + (moveEvent.clientX - startX)));
-          setBox({ ...box, width });
-        };
-        const end = (upEvent) => {
-          window.removeEventListener('pointermove', move);
-          window.removeEventListener('pointerup', end);
-          writeHudConfig({
-            width: 'px',
-            widthPx: Math.max(140, Math.round(startWidth + (upEvent.clientX - startX))),
-          });
-        };
-        window.addEventListener('pointermove', move);
-        window.addEventListener('pointerup', end);
-      };
-
-      const startHeight = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const startY = event.clientY;
-        const startHeightPx = stripRef.current ? stripRef.current.getBoundingClientRect().height : 120;
-        const move = (moveEvent) => {
-          const height = Math.max(60, Math.round(startHeightPx + (moveEvent.clientY - startY)));
-          setBox((current) => ({ ...current, height }));
-        };
-        const end = (upEvent) => {
-          window.removeEventListener('pointermove', move);
-          window.removeEventListener('pointerup', end);
-          writeHudConfig({
-            height: 'px',
-            heightPx: Math.max(60, Math.round(startHeightPx + (upEvent.clientY - startY))),
-          });
-        };
-        window.addEventListener('pointermove', move);
-        window.addEventListener('pointerup', end);
-      };
-
-      // Keep the panel mounted on a fresh session: the stat pills do not exist
-      // yet, and hiding the whole widget read as "the HUD died".
-      if (box.hidden) return null;
-
-      const style = {
-        left: typeof box.left === 'number' ? box.left + 'px' : undefined,
-        bottom: typeof box.bottom === 'number' ? box.bottom + 'px' : undefined,
-        width: typeof box.width === 'number' ? box.width + 'px' : undefined,
-        zIndex: config.layer,
-        borderRadius: '0px',
-      };
-      // Height always follows the content: a fixed height clipped the rows.
-      style.height = 'auto';
-      if (config.cut) {
-        style.clipPath = 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)';
-      }
-      // Same plane as the sidebar it floats in.
-      style.transform = 'perspective(1000px) rotateY(' + Math.abs(config.tilt || 7) + 'deg) rotateX(1.2deg)';
-      style.transformOrigin = (typeof box.axis === 'number' ? box.axis : 0) + 'px ' +
-        (typeof box.axisY === 'number' ? box.axisY : 0) + 'px';
-
-      const panel = h('div', {
-        ref: stripRef,
-        className: 'dsh-hud-stats',
-        'data-cols': String(config.cols),
-        'data-fixed-width': typeof box.width === 'number' ? 'true' : undefined,
-        'data-cut': config.cut ? 'true' : undefined,
-        'aria-hidden': true,
-        style,
-      },
-        h('span', { className: 'dsh-hud-stats__scan' }),
-        glitch > 0
-          ? h('span', { className: 'dsh-hud-stats__glitch', key: 'glitch-' + glitch })
-          : null,
-        pulse > 0
-          ? h('span', { className: 'dsh-hud-stats__sweep', key: 'sweep-' + pulse })
-          : null,
-        ...rows.flatMap((text) => pairUp(text).map((pair) => ({ text, pair }))).map((entry, rowIndex) => {
-          const { text, pair } = entry;
-          const kind = classify(pair.unit + ' ' + pair.lead);
-          const percent = pair.unit === '%' ? Math.max(0, Math.min(100, parseFloat(pair.value))) : null;
-          const primary = rowIndex === 0;
-          const unitRight = rowIndex < 4;
-          return h('div', { className: 'dsh-hud-stats__row', key: text + rowIndex },
-            h('span', { className: primary ? 'dsh-hud-stats__icon-box is-primary' : 'dsh-hud-stats__icon-box' }, glyph(kind)),
-            h('span', { className: primary ? 'dsh-hud-stats__value is-primary' : 'dsh-hud-stats__value' },
-              h(RollingNumber, { value: pair.value }),
-              !unitRight && pair.unit ? h('span', { className: 'dsh-hud-stats__unit' }, pair.unit) : null),
-            (unitRight ? pair.unit : pair.lead)
-              ? h('span', { className: 'dsh-hud-stats__label' }, unitRight ? pair.unit : pair.lead)
-              : null,
-            percent !== null
-              ? h('span', {
-                  className: 'dsh-hud-stats__bar',
-                  'data-tone': toneOf(text, pair.unit, pair.value) || 'calm',
-                  style: { '--fill': percent + '%' },
-                })
-              : null);
-        }),
-        h(Sparkline, { points: spark }),
-        h('span', {
-          className: 'dsh-hud-stats__status',
-          'data-state': status,
-          key: 'status',
-        }));
-
-      // Ammunition-low style warning: a thin band above the composer.
-      const band = load >= 85 && box.composer
-        ? h('span', {
-            className: 'dsh-hud-warning',
-            key: 'warn',
-            style: {
-              left: box.composer.left + 'px',
-              width: box.composer.width + 'px',
-              top: box.composer.top - 7 + 'px',
-            },
-          })
-        : null;
-
-      return h(React.Fragment, null, panel, band);
-    }
-
-    // ── Settings key hints (bottom of the settings dialog) ───────────────────
-    // The reference menus all carry a keycap strip; the dialog closes on Escape,
-    // so this shows that one real binding rather than invented shortcuts.
     function SettingsHints(props) {
       const t = props.t;
       const [box, setBox] = React.useState(null);
@@ -2952,27 +3218,51 @@ html:root body ::-webkit-scrollbar-thumb:active {
         className: 'dsh-hud-settings__btn' + (config[key] ? ' is-on' : ''),
         'aria-pressed': Boolean(config[key]),
         onClick: () => update({ [key]: !config[key] }),
-      }, config[key] ? t('on') : t('off'));
+      }, config[key] ? '开 · On' : '关 · Off');
 
       const row = (label, control) => h('div', { className: 'dsh-hud-settings__row' },
         h('span', { className: 'dsh-hud-settings__label' }, label),
         control);
 
       return h('div', { className: 'dsh-hud-settings' },
-        h('h2', { className: 'dsh-hud-settings__title' }, t('title')),
-        h('p', { className: 'dsh-hud-settings__hint' }, t('hint')),
-        row(t('columns'), segment('cols', [[1, '1'], [2, '2']])),
-        row(t('width'), segment('width', [['content', t('widthContent')], ['sidebar', t('widthSidebar')], ['px', t('widthPx')]])),
-        row(t('widthPxLabel'), stepper('widthPx', 140, 900)),
-        row(t('baseline'), segment('baseline', [['free', t('baselineFree')], ['account', t('baselineAccount')], ['composer', t('baselineComposer')], ['window', t('baselineWindow')]])),
-        row(t('left'), stepper('left', 0, 1600)),
-        row(t('bottom'), stepper('bottom', 0, 900)),
-        row(t('rise'), stepper('rise', 0, 400)),
-        row(t('radius'), stepper('radius', 0, 20)),
-        row(t('cut'), toggle('cut')),
-        row(t('tilt'), stepper('tilt', -12, 12)),
-        row(t('layer'), stepper('layer', 1, 200)),
-        row(t('lift'), toggle('lift')),
+        h('h2', { className: 'dsh-hud-settings__title' }, '面板设置 · Panel'),
+        h('p', { className: 'dsh-hud-settings__hint' }, '这些开关只影响读数面板与背景。关掉总开关可完全恢复原生界面。 · These switches affect the panel and background only.'),
+        row('启用皮肤 · Skin', toggle('enabled')),
+        row('背景灯效 · Background light', toggle('lights')),
+        row('等高线背景 · Contours', toggle('contours')),
+        row('自定义背景 · Custom background', h('span', { className: 'dsh-hud-settings__bg' },
+          h('input', {
+            type: 'text',
+            className: 'dsh-hud-settings__num',
+            value: config.bg || '',
+            placeholder: 'url("...") / 渐变',
+            onChange: (event) => update({ bg: event.target.value }),
+          }),
+          h('input', {
+            type: 'file',
+            accept: 'image/*',
+            className: 'dsh-hud-settings__file',
+            onChange: (event) => {
+              const file = event.target.files && event.target.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => update({ bg: 'url("' + String(reader.result) + '")' });
+              reader.readAsDataURL(file);
+            },
+          }))),
+        row('列数 · Columns', segment('cols', [[1, '1'], [2, '2']])),
+        row('宽度 · Width', segment('width', [['content', '内容宽 · Content'], ['sidebar', '侧栏宽 · Sidebar'], ['px', '固定值 · Fixed']])),
+        row('宽度 · Width (px)', stepper('widthPx', 140, 900)),
+        row('对齐方式 · Anchor', segment('baseline', [['free', '自由 · Free'], ['account', '账号 · Account'], ['composer', '输入框 · Composer'], ['window', '窗口 · Window']])),
+        row('左偏移 · Left', stepper('left', 0, 1600)),
+        row('下偏移 · Bottom', stepper('bottom', 0, 900)),
+        row('抬升 · Rise', stepper('rise', 0, 400)),
+        row('圆角 · Radius', stepper('radius', 0, 20)),
+        row('切角 · Cut corners', toggle('cut')),
+        row('倾斜角度 · Tilt', stepper('tilt', -12, 12)),
+        row('层级 · Layer', stepper('layer', 1, 200)),
+        row('上移账号行 · Lift account', toggle('lift')),
+        row('轻量模式 · Lite mode', toggle('lite')),
         h('div', { className: 'dsh-hud-settings__foot' },
           h('button', {
             type: 'button',
@@ -2981,7 +3271,206 @@ html:root body ::-webkit-scrollbar-thumb:active {
               try { localStorage.removeItem(HUD_KEY); } catch (error) { /* private mode */ }
               window.dispatchEvent(new CustomEvent('paper-skin:hud'));
             },
-          }, t('reset'))));
+          }, '恢复默认 · Reset')));
+    }
+
+    // Interval that stops completely while the window is hidden: no wake-ups,
+    // no layout reads in the background.
+    function startLoop(fn, ms) {
+      let id = null;
+      const run = () => { if (document.hidden) return; try { fn(); } catch (error) {} };
+      const start = () => { if (id === null) id = setInterval(run, ms); };
+      const stop = () => { if (id !== null) { clearInterval(id); id = null; } };
+      const onVisibility = () => { if (document.hidden) stop(); else start(); };
+      document.addEventListener('visibilitychange', onVisibility);
+      start();
+      return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
+    }
+
+    // ── Flow HUD (plain DOM) ─────────────────────────────────────────────────
+    // Renders the readout cluster inside the sidebar column. Kept out of React on
+    // purpose: relocating a React-managed node unmounts the app.
+    function mountFlowHud() {
+      const host = document.createElement('div');
+      host.className = 'dsh-hud-stats dsh-hud-inline';
+      host.setAttribute('aria-hidden', 'true');
+
+      const scan = document.createElement('span');
+      scan.className = 'dsh-hud-stats__scan';
+      host.appendChild(scan);
+
+      const list = document.createElement('div');
+      list.className = 'dsh-hud-stats__list';
+      host.appendChild(list);
+
+      const spark = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      spark.setAttribute('class', 'dsh-hud-stats__spark');
+      spark.setAttribute('viewBox', '0 0 100 28');
+      spark.setAttribute('preserveAspectRatio', 'none');
+      spark.setAttribute('aria-hidden', 'true');
+      host.appendChild(spark);
+
+      const status = document.createElement('span');
+      status.className = 'dsh-hud-stats__status';
+      status.setAttribute('data-state', 'idle');
+      host.appendChild(status);
+
+      const icon = (kind) => '<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true" class="dsh-hud-stats__icon" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">' +
+        (ICONS[kind] || ICONS.generic).map((d) => '<path d="' + d + '"></path>').join('') + '</svg>';
+
+      const readSegments = () => {
+        const out = [];
+        document.querySelectorAll('[data-composer-stat]').forEach((node) => {
+          const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+          if (!text) return;
+          text.split(SEPARATOR).forEach((part) => {
+            const segment = part.trim();
+            if (segment) out.push(segment);
+          });
+        });
+        return out;
+      };
+
+      const samples = [];
+      const rowsCache = [];
+
+      const render = () => {
+        const segments = readSegments();
+        const pairs = [];
+
+        // The host stopped rendering turn/step counts, so count them ourselves:
+        // one user message is a turn, one tool call is a step.
+        const turns = document.querySelectorAll('[data-chat-flow-kind="user"]').length;
+        const steps = document.querySelectorAll('[data-chat-flow-kind="tool-call"], [class*="_callRow"]').length;
+        if (turns > 0) pairs.push({ text: 'turns', pair: { value: String(turns), unit: '轮', lead: '' } });
+        if (steps > 0) pairs.push({ text: 'steps', pair: { value: String(steps), unit: '步', lead: '' } });
+
+        segments.forEach((segment) => { pairUp(segment).forEach((pair) => pairs.push({ text: segment, pair })); });
+
+        // Build once, then only touch the text nodes: rebuilding innerHTML would
+        // restart the bar transitions on every tick.
+        if (rowsCache.length !== pairs.length) {
+          list.textContent = '';
+          rowsCache.length = 0;
+          pairs.forEach((entry, index) => {
+            const kind = classify(entry.pair.unit + ' ' + entry.pair.lead);
+            const row = document.createElement('div');
+            row.className = 'dsh-hud-stats__row';
+            row.innerHTML =
+              '<span class="dsh-hud-stats__icon-box' + (index === 0 ? ' is-primary' : '') + '">' + icon(kind) + '</span>' +
+              '<span class="dsh-hud-stats__value' + (index === 0 ? ' is-primary' : '') + '"></span>' +
+              '<span class="dsh-hud-stats__label"></span>';
+            list.appendChild(row);
+            rowsCache.push({
+              row,
+              value: row.querySelector('.dsh-hud-stats__value'),
+              label: row.querySelector('.dsh-hud-stats__label'),
+              unit: null,
+              bar: null,
+            });
+          });
+        }
+
+        pairs.forEach((entry, index) => {
+          const slot = rowsCache[index];
+          if (!slot) return;
+          const unitRight = index < 4;
+          const unit = entry.pair.unit || '';
+          const lead = entry.pair.lead || '';
+          const numeric = parseFloat(entry.pair.value);
+          const percent = unit === '%' && Number.isFinite(numeric) ? Math.max(0, Math.min(100, numeric)) : null;
+
+          if (slot.lastValue !== undefined && slot.lastValue !== entry.pair.value) {
+            slot.value.classList.remove('is-rolling');
+            void slot.value.offsetWidth;   // restart the one-shot animation
+            slot.value.classList.add('is-rolling');
+          }
+          slot.lastValue = entry.pair.value;
+          slot.value.textContent = entry.pair.value;
+          if (slot.unit) slot.unit.remove();
+          slot.unit = null;
+          if (!unitRight && unit) {
+            slot.unit = document.createElement('span');
+            slot.unit.className = 'dsh-hud-stats__unit';
+            slot.unit.textContent = unit;
+            slot.value.appendChild(slot.unit);
+          }
+          // Percent rows usually read "缓存命中 99.8%": keep the label.
+          slot.label.textContent = lead || (unitRight ? unit : '');
+
+          if (percent !== null) {
+            if (!slot.bar) {
+              slot.bar = document.createElement('span');
+              slot.bar.className = 'dsh-hud-stats__bar';
+              slot.row.appendChild(slot.bar);
+            }
+            slot.bar.dataset.tone = toneOf(entry.text, unit, entry.pair.value) || 'calm';
+            slot.bar.style.setProperty('--fill', percent + '%');
+          } else if (slot.bar) {
+            slot.bar.remove();
+            slot.bar = null;
+          }
+        });
+
+        // Trend line from the throughput sample.
+        const speed = pairs.find((entry) => /tok\/s/i.test(entry.pair.unit));
+        if (speed) {
+          const value = parseFloat(speed.pair.value);
+          if (Number.isFinite(value)) samples.push(value);
+          if (samples.length > 24) samples.shift();
+        }
+        if (samples.length >= 2) {
+          const max = Math.max.apply(null, samples.concat(1));
+          const step = 100 / (samples.length - 1);
+          const path = samples.map((value, index) => {
+            const x = index * step;
+            const y = 26 - (value / max) * 22;
+            return (index === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+          }).join(' ');
+          spark.innerHTML =
+            '<line x1="0" y1="26.5" x2="100" y2="26.5" stroke="var(--hud-bracket)" stroke-width="0.5" vector-effect="non-scaling-stroke"></line>' +
+            '<path d="' + path + '" fill="none" stroke="var(--dsw-alias-brand-primary)" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>';
+        }
+
+        const errored = document.querySelectorAll('[data-error]').length > 0;
+        const running = Boolean(document.querySelector('[data-phase="active"]'));
+        status.setAttribute('data-state', errored ? 'error' : running ? 'active' : 'idle');
+      };
+
+      // Insert once. Only act again when the host has actually removed the node:
+      // re-inserting while it is attached made React re-render in a loop, which
+      // read as the whole sidebar blinking.
+      const place = () => {
+        if (host.isConnected) return;
+        const column = document.querySelector('[class*="_sidebarCol"]');
+        if (!column) return;
+        const foot = column.querySelector('[class*="_footArea"]');
+        if (foot && foot.parentElement) foot.parentElement.insertBefore(host, foot);
+        else column.appendChild(host);
+      };
+
+      const tick = () => { try { place(); render(); } catch (error) { /* never break the app */ } };
+      tick();
+
+      // React re-renders the sidebar on every stat tick and drops foreign nodes.
+      // Re-insert synchronously on mutation so the gap never reaches a paint.
+      let observer = null;
+      const watch = () => {
+        const column = document.querySelector('[class*="_sidebarCol"]');
+        if (!column) return;
+        if (observer && observer._target === column) return;
+        if (observer) observer.disconnect();
+        observer = new MutationObserver(() => { try { place(); } catch (error) {} });
+        observer._target = column;
+        observer.observe(column, { childList: true, subtree: true });
+      };
+      watch();
+      const stopLoop = startLoop(() => { watch(); tick(); }, 700);
+      return () => {
+        stopLoop();
+        if (observer) observer.disconnect();
+        host.remove();
+      };
     }
 
     return {
@@ -2989,14 +3478,6 @@ html:root body ::-webkit-scrollbar-thumb:active {
       apply(ctx) {
         // A rejected token layer must not take the stylesheet down with it: the
         // palette degrades to the host default, the material system still loads.
-        ctx.effect(() => {
-          try {
-            return ctx.theme.overrideTokens(SOURCE, TOKENS);
-          } catch (error) {
-            console.warn('[paper-skin] alias token layer rejected', error);
-            return () => {};
-          }
-        });
         // Dock expansion: the docked panel is about half the window, the
         // full-bleed one fills it, so width is the signal. Clicks on the dock
         // controls update the flag immediately; measurement is the fallback.
@@ -3047,11 +3528,11 @@ html:root body ::-webkit-scrollbar-thumb:active {
 
           document.addEventListener('click', onClick, true);
           schedule();
-          const timer = setInterval(schedule, 200);
+          const stopLoop = startLoop(schedule, 450);
           window.addEventListener('resize', schedule);
           return () => {
             document.removeEventListener('click', onClick, true);
-            clearInterval(timer);
+            stopLoop();
             window.removeEventListener('resize', schedule);
             delete document.body.dataset.hudDockExpanded;
           };
@@ -3064,6 +3545,8 @@ html:root body ::-webkit-scrollbar-thumb:active {
           let right = null;
           let leftUntil = 0;
           let rightUntil = 0;
+          let leftSettleAt = 0;
+          let rightSettleAt = 0;
 
           const tick = () => {
             const l = document.querySelector('[class*="_sidebarCol"]');
@@ -3072,23 +3555,208 @@ html:root body ::-webkit-scrollbar-thumb:active {
             const rw = r ? Math.round(r.getBoundingClientRect().width) : 0;
             const now = Date.now();
 
-            if (left !== null && Math.abs(lw - left) > 1) leftUntil = now + 280;
-            if (right !== null && Math.abs(rw - right) > 1) rightUntil = now + 280;
+            if (left !== null && Math.abs(lw - left) > 2) leftUntil = now + 280;
+            if (right !== null && Math.abs(rw - right) > 2) rightUntil = now + 280;
             left = lw;
             right = rw;
 
-            if (now < leftUntil) document.body.dataset.hudLeftMoving = 'true';
+            const leftMoving = now < leftUntil;
+            const rightMoving = now < rightUntil;
+
+            // Settle flash: fires once when a side stops resizing.
+            if (!leftMoving && document.body.dataset.hudLeftMoving && now > leftSettleAt) {
+              leftSettleAt = now + 900;
+              document.body.dataset.hudLeftSettled = 'true';
+              setTimeout(() => delete document.body.dataset.hudLeftSettled, 260);
+            }
+            if (!rightMoving && document.body.dataset.hudRightMoving && now > rightSettleAt) {
+              rightSettleAt = now + 900;
+              document.body.dataset.hudRightSettled = 'true';
+              setTimeout(() => delete document.body.dataset.hudRightSettled, 260);
+            }
+
+            if (leftMoving) document.body.dataset.hudLeftMoving = 'true';
             else delete document.body.dataset.hudLeftMoving;
-            if (now < rightUntil) document.body.dataset.hudRightMoving = 'true';
+            if (rightMoving) document.body.dataset.hudRightMoving = 'true';
             else delete document.body.dataset.hudRightMoving;
           };
 
-          const timer = setInterval(tick, 90);
+          const stopLoop = startLoop(tick, 130);
           tick();
           return () => {
-            clearInterval(timer);
+            stopLoop();
             delete document.body.dataset.hudLeftMoving;
             delete document.body.dataset.hudRightMoving;
+          };
+        });
+
+        // Tag the new-session button once, so the long attribute chain does not
+        // have to be matched by every stylesheet rule.
+        ctx.effect(() => {
+          const tag = () => {
+            const button = document.querySelector('[class*="_newSession"]');
+            if (!button || button.hasAttribute('data-hud-new-session')) return;
+            const cls = String(button.className);
+            if (/_newSession(Content|Label|Shortcut|LabelMask)/.test(cls)) return;
+            button.setAttribute('data-hud-new-session', '');
+          };
+          tag();
+          const stopLoop = startLoop(tag, 1500);
+          return () => stopLoop();
+        });
+
+        // Platform flag: Windows needs different hairlines and less blur (DWM
+        // acrylic already blurs the window behind us).
+        ctx.effect(() => {
+          const ua = navigator.userAgent || '';
+          const platform = /Windows/i.test(ua) ? 'win' : /Mac/i.test(ua) ? 'mac' : 'other';
+          document.documentElement.dataset.os = platform;
+          if (/Windows/i.test(ua)) document.body.dataset.hudPlatform = 'win';
+          return () => {
+            delete document.documentElement.dataset.os;
+            delete document.body.dataset.hudPlatform;
+          };
+        });
+
+        // Streaming cursor: keep a blinking block at the end of the live answer.
+        // The host marks the running turn with data-phase, not data-streaming.
+        ctx.effect(() => {
+          const cursor = document.createElement('span');
+          cursor.className = 'dsh-hud-cursor';
+          cursor.setAttribute('aria-hidden', 'true');
+
+          const findTail = () => {
+            const active = document.querySelector('[data-phase="active"]');
+            if (!active) return null;
+            // Only paragraphs of the answer itself: tool cards and code blocks
+            // made the block jump around or sit inside a <pre>.
+            const blocks = Array.from(active.querySelectorAll('p')).filter((node) => (
+              !node.closest('[class*="_callRow"], pre, [class*="_toolCard"], [data-chat-flow-kind="turn-process"]')
+            ));
+            return blocks.length ? blocks[blocks.length - 1] : null;
+          };
+
+          const tick = () => {
+            try {
+              const tail = findTail();
+              if (!tail) {
+                if (cursor.parentElement) cursor.remove();
+                return;
+              }
+              if (cursor.parentElement !== tail) {
+                cursor.remove();
+                tail.appendChild(cursor);
+              }
+            } catch (error) { /* never break the app */ }
+          };
+
+          tick();
+          const stopLoop = startLoop(tick, 400);
+          return () => {
+            stopLoop();
+            cursor.remove();
+          };
+        });
+
+        // Boot-in: one-time flag on <html> for the first second after load, so the
+        // panels rise in sequence exactly once and never replay on re-render.
+        ctx.effect(() => {
+          let frames = 0;
+          const marked = [];
+          const mark = () => {
+            frames += 1;
+            if (frames < 2) { requestAnimationFrame(mark); return; }
+            // Tag only the nodes that exist right now: a column the host mounts
+            // later must not inherit the entrance and replay it.
+            document.querySelectorAll(
+              '[class*="_sidebarCol"], [class*="_centerCol"], [class*="_rightbarCol"], ' +
+              '[data-slot="conversation.composer"] [class*="_card"], .dsh-hud-stats'
+            ).forEach((node) => {
+              node.classList.add('dsh-hud-booting');
+              marked.push(node);
+            });
+          };
+          requestAnimationFrame(mark);
+          const timer = setTimeout(() => marked.forEach((node) => node.classList.remove('dsh-hud-booting')), 900);
+          return () => {
+            clearTimeout(timer);
+            marked.forEach((node) => node.classList.remove('dsh-hud-booting'));
+          };
+        });
+
+        // Window blur: the whole HUD dims while the app is not focused, like a
+        // game that pauses when you look away.
+        ctx.effect(() => {
+          const dim = document.createElement('div');
+          dim.className = 'dsh-hud-dim';
+          document.body.appendChild(dim);
+          const onBlur = () => document.documentElement.setAttribute('data-hud-blur', 'true');
+          const onFocus = () => document.documentElement.removeAttribute('data-hud-blur');
+          const onVis = () => { if (document.hidden) onBlur(); else onFocus(); };
+          window.addEventListener('blur', onBlur);
+          window.addEventListener('focus', onFocus);
+          document.addEventListener('visibilitychange', onVis);
+          return () => {
+            window.removeEventListener('blur', onBlur);
+            window.removeEventListener('focus', onFocus);
+            document.removeEventListener('visibilitychange', onVis);
+            document.documentElement.removeAttribute('data-hud-blur');
+            dim.remove();
+          };
+        });
+
+        // Sweep light layer (replaces the old masked background animation).
+        ctx.effect(() => {
+          const layer = document.createElement('div');
+          layer.className = 'dsh-hud-sweep';
+          const band = document.createElement('div');
+          band.className = 'dsh-hud-sweep__band';
+          layer.appendChild(band);
+          document.body.appendChild(layer);
+          return () => layer.remove();
+        });
+
+        // Plain-DOM readout cluster inside the sidebar: same markup and classes as
+        // the React one, but we own it, so it can live in the sidebar's flow.
+        ctx.effect(() => {
+          if (!mountFlowHud) return () => {};
+          return mountFlowHud();
+        });
+
+        // Lite mode: one switch that drops the shop-window effects. Also marks the
+        // document idle when the window is hidden so nothing animates off-screen.
+        ctx.effect(() => {
+          const apply = () => {
+            let config = {};
+            try { config = readHudConfig(); } catch (error) { /* private mode */ }
+            if (config.lite) document.body.dataset.hudLite = 'true';
+            else delete document.body.dataset.hudLite;
+
+            // Background light: the sweep lives on html::after, so the flag goes
+            // on the root element too.
+            if (config.lights === false) document.documentElement.dataset.hudLights = 'off';
+            else delete document.documentElement.dataset.hudLights;
+
+            if (config.contours === false) document.documentElement.dataset.hudContours = 'off';
+            else delete document.documentElement.dataset.hudContours;
+
+            const bg = String(config.bg || '').trim();
+            if (bg) document.documentElement.style.setProperty('--hud-bg', bg);
+            else document.documentElement.style.removeProperty('--hud-bg');
+          };
+          apply();
+          const onHud = () => apply();
+          window.addEventListener('paper-skin:hud', onHud);
+
+          const onVisibility = () => {
+            if (document.hidden) document.body.dataset.hudIdle = 'true';
+            else delete document.body.dataset.hudIdle;
+          };
+          onVisibility();
+          document.addEventListener('visibilitychange', onVisibility);
+          return () => {
+            window.removeEventListener('paper-skin:hud', onHud);
+            document.removeEventListener('visibilitychange', onVisibility);
           };
         });
 
@@ -3276,12 +3944,10 @@ html:root body ::-webkit-scrollbar-thumb:active {
         }
 
         if (React && typeof React.createElement === 'function') {
-          ctx.slots.inject('shell.overlay', () => ctx.slots.register({
-            name: 'shell.overlay',
-            id: 'paper-skin-stats',
-            order: 20,
-          }, HudStats));
-          const Hints = () => SettingsHints({ t });
+          // The readout cluster is rendered as plain DOM inside the sidebar (see
+          // mountFlowHud): a React tree cannot be relocated across containers
+          // without unmounting the whole UI. This keeps the slot free.
+          const Hints = () => SettingsHints({ t: ctx.locale.bind('paper-skin') });
           ctx.slots.inject('shell.overlay', () => ctx.slots.register({
             name: 'shell.overlay',
             id: 'paper-skin-hints',
@@ -3305,7 +3971,31 @@ html:root body ::-webkit-scrollbar-thumb:active {
           style.setAttribute('data-paper-skin', SOURCE);
           style.textContent = MATERIAL;
           document.head.appendChild(style);
+
+          // Master switch: disabling the skin removes both its stylesheet and the
+          // token override, so the stock interface comes back with no residue.
+          let tokenDispose = null;
+          const syncEnabled = () => {
+            let enabled = true;
+            try { enabled = readHudConfig().enabled !== false; } catch (error) { /* private mode */ }
+            style.disabled = !enabled;
+            document.documentElement.classList.toggle('dsh-skin-off', !enabled);
+            if (!enabled) {
+              if (tokenDispose) { tokenDispose(); tokenDispose = null; }
+              if (window.__paperSkin) window.__paperSkin.disabled = true;
+            } else {
+              if (!tokenDispose) {
+                try { tokenDispose = ctx.theme.overrideTokens(SOURCE, TOKENS); } catch (error) { tokenDispose = () => {}; }
+              }
+              if (window.__paperSkin) window.__paperSkin.disabled = false;
+            }
+          };
+          syncEnabled();
+          window.addEventListener('paper-skin:hud', syncEnabled);
+
           return () => {
+            window.removeEventListener('paper-skin:hud', syncEnabled);
+            if (tokenDispose) tokenDispose();
             style.remove();
           };
         });

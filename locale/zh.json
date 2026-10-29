@@ -1,6 +1,36 @@
 {
   "meta": {
-    "title": "封锁橙dsh皮肤插件",
+    "title": "封锁橙 dsh 皮肤插件",
     "description": "封锁橙 DSH 皮肤插件：全境封锁式 HUD，半透明灰色面板悬浮于桌面之上，发丝级灰色描边、克制的危机橙焦点标记、切角容器与 HUD 字体。"
-  }
+  },
+  "title": "封锁橙 · HUD 读数",
+  "hint": "这些开关只影响读数面板与背景。关掉总开关可完全恢复原生界面。",
+  "hintBack": "按 Esc 关闭",
+  "enabled": "启用皮肤",
+  "lights": "背景灯效",
+  "contours": "等高线背景",
+  "bg": "自定义背景",
+  "columns": "列数",
+  "width": "宽度",
+  "widthContent": "内容宽",
+  "widthSidebar": "侧栏宽",
+  "widthPx": "固定值",
+  "widthPxLabel": "宽度（px）",
+  "baseline": "对齐方式",
+  "baselineFree": "自由",
+  "baselineAccount": "账号",
+  "baselineComposer": "输入框",
+  "baselineWindow": "窗口",
+  "left": "左偏移",
+  "bottom": "下偏移",
+  "rise": "抬升",
+  "radius": "圆角",
+  "cut": "切角",
+  "tilt": "倾斜角度",
+  "layer": "层级",
+  "lift": "上移账号行",
+  "lite": "轻量模式",
+  "on": "开",
+  "off": "关",
+  "reset": "恢复默认"
 }

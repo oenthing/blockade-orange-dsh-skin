@@ -23,13 +23,35 @@ and injects one stylesheet.
   steps, throughput, cache hit and context load.
 - **Settings**: a glass dialog with the same selection language, plus a
   dedicated section for the HUD geometry.
-- **Background**: a contour map with a slow amber sweep and a static terrain.
+- **Background**: a contour map with a slow amber sweep (a composited layer, so
+  it costs almost nothing while scrolling) over a static terrain.
+- **Settings**: a master switch, background-light switch, contour switch, custom
+  background, lite mode, and the panel geometry.
+
+## Settings
+
+*Settings → 面板设置 · Panel* holds every switch the skin exposes:
+
+| Switch | What it does |
+|---|---|
+| 启用皮肤 · Skin | Master switch. Off removes the stylesheet and the token override, restoring the stock interface with no residue. |
+| 背景灯效 · Background light | Hides the amber sweep only; the contour map stays. |
+| 等高线背景 · Contours | Hides both contour layers, leaving a clean canvas. |
+| 自定义背景 · Custom background | Any CSS image: `url("...")`, a gradient, or a local file picked from disk (stored as a data URL). |
+| 轻量模式 · Lite mode | Drops the sweep, every backdrop blur and the looping pulses — the switch for weak GPUs. |
+| 读面板几何 | Columns, width, anchor, offsets, rise, radius, cut corners, tilt, layer. |
+
+The panel itself lives **inside the sidebar flow**, above the account row, so it
+can never cover the session list.
+
 
 ## Screenshots
 
 ![Conversation and sidebar](docs/conversation.jpg)
 
-![Settings dialog](docs/settings.jpg)
+![Settings panel](docs/settings.jpg)
+
+![Settings geometry](docs/settings-geometry.jpg)
 
 | Right dock | HUD cluster |
 |---|---|
@@ -50,7 +72,7 @@ leave the client module cached.
 ## Uninstall / rollback
 
 ```
-plugin_manager remove_bundle dsh-paper-skin
+plugin_manager remove_bundle @local/paper-skin
 ```
 
 Every change lives inside the plugin: theme tokens are re-declared, and one
@@ -60,10 +82,13 @@ no residue — no patched files, no persisted layout state.
 
 ## Fonts
 
-The package embeds **Borda** (Northern Block) as WOFF2 subsets for local use.
-**Borda is a commercial typeface and is not redistributed for reuse** — if you
-are not the licensee, delete `fonts/borda-*` and `client.js` will fall back to
-Titillium Web, which is bundled under the SIL Open Font License.
+The package embeds **Borda** (Northern Block) as WOFF2 subsets for local use —
+both in `fonts/` and, base64-encoded, inside `client.js`, which is what the
+stylesheet actually loads. **Borda is a commercial typeface and is not
+redistributed for reuse**: deleting `fonts/borda-*` removes the copies on disk
+but *not* the font embedded in `client.js`. A public build must repack
+`client.js` against Titillium Web (SIL Open Font License) and drop the Borda
+`@font-face` rules.
 
 `fonts/NOTICE.md` records this in full.
 
@@ -86,8 +111,10 @@ The HUD panel is also configurable from *Settings → 封锁橙dsh皮肤插件*.
   reopening it can leave the host with a "fullscreen state, docked geometry"
   layout. This is a host behaviour; the skin deliberately does not force a
   width to avoid breaking the toggle.
-- The HUD cluster is not painted while the dock is fullscreen (it is covered in
-  effect), because the two live in the same stacking band.
+- The readout cluster sits in the sidebar flow: on a very short window it takes
+  a share of the list height instead of overlapping it.
+- The host only publishes throughput and cache-hit as stats, so the cluster
+  counts turns and steps from the transcript itself.
 - Some surfaces match host class-name suffixes; an unfamiliar build degrades to
   the stock look rather than breaking.
 

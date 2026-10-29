@@ -1,0 +1,39 @@
+封锁橙 · DSH 皮肤插件 2.3.2
+================================
+
+安装（ZIP 本地安装）
+--------------------
+1. 把压缩包解压到任意目录（路径可以带空格，命令里加引号即可）
+   例如：~/Downloads/blockade-orange-dsh-skin
+2. 在 DeepSeek Harness 里执行：
+     plugin_manager install_bundle "/路径/blockade-orange-dsh-skin"
+3. 完全退出客户端，再打开：
+     macOS   Cmd+Q
+     Windows 关闭窗口后确认托盘图标也退出
+   （Cmd+R 只刷新页面，客户端模块可能仍是旧缓存）
+
+安装（插件市场）
+----------------
+如果是通过 插件 → 发现（Discover）安装，不需要本目录，
+直接搜索「封锁橙 / Blockade Orange」即可。
+
+使用
+----
+- 设置 → 封锁橙dsh皮肤插件：调整侧栏数据面板的位置、宽度、圆角、倾斜、层级
+- 控制台快捷操作：
+     __paperSkin.hud.get()
+     __paperSkin.hud.set({ bottom: 300 })
+     __paperSkin.hud.reset()
+
+卸载
+----
+     plugin_manager remove_bundle @local/paper-skin
+
+说明
+----
+- 纯客户端插件：只覆盖主题变量并注入样式表，不修改宿主代码，卸载后恢复原样
+- 数据面板位置保存在浏览器 localStorage，卸载后可手动清除
+- 内置 Borda 字体仅限本地使用，请勿再公开分发
+  （注意：Borda 字体已以 base64 内嵌在 client.js 中，删除 fonts/ 目录并不能去掉它）
+- 已知问题：右侧 dock 全屏关闭再打开，可能留下宿主的布局残留；
+            dock 全屏时侧栏数据面板会被同层覆盖
