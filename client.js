@@ -3179,6 +3179,10 @@ html:root body ::-webkit-scrollbar-thumb:active {
     // ── Settings page ────────────────────────────────────────────────────────
     // Every geometric knob in one place: columns, width, baseline, offsets,
     // corner radius, cut corners and stacking layer. Values apply instantly.
+    // Fallback styling for this page only: when the master switch is off the
+    // skin stylesheet is disabled, which used to leave this page unstyled.
+    const HUD_SETTINGS_FALLBACK = ".dsh-hud-settings{position:relative;display:flex;flex-direction:column;gap:2px;margin:6px 0 24px;padding:18px 20px 20px;max-width:640px;color:#f2f4f8;background:rgba(18,20,24,.94);border:1px solid rgba(255,143,31,.45);border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 10px 28px rgba(0,0,0,.45)}\n.dsh-hud-settings::before{content:\"\";position:absolute;top:6px;left:6px;width:14px;height:1px;background:#ff8f1f;box-shadow:0 0 0 .5px rgba(255,143,31,.4)}\n.dsh-hud-settings__title{margin:0 0 6px;font-size:15px;font-weight:600;color:#ffb35c;letter-spacing:.02em}\n.dsh-hud-settings__hint{margin:0 0 10px;font-size:12px;line-height:1.6;color:#aab2bf}\n.dsh-hud-settings__row{display:flex;align-items:center;gap:12px;justify-content:space-between;min-height:34px;padding:4px 6px;border-bottom:1px dashed rgba(255,255,255,.08)}\n.dsh-hud-settings__label{font-size:13px;color:#dfe4ec;flex:0 0 auto;max-width:46%}\n.dsh-hud-settings__seg{display:flex;gap:4px;flex-wrap:wrap}\n.dsh-hud-settings__btn{font:inherit;font-size:12px;line-height:1;padding:6px 10px;color:#cfd6e0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:2px;cursor:pointer}\n.dsh-hud-settings__btn:hover{border-color:#ff8f1f;color:#ffcf8f}\n.dsh-hud-settings__btn.is-on{color:#111418;background:#ff8f1f;border-color:#ff8f1f}\n.dsh-hud-settings__num{font:inherit;font-size:12px;width:110px;padding:6px 8px;color:#eef1f6;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:2px;outline:none}\n.dsh-hud-settings__num:focus{border-color:#ff8f1f}\n.dsh-hud-settings__bg{display:flex;gap:6px;align-items:center;flex-wrap:wrap}\n.dsh-hud-settings__bg .dsh-hud-settings__num{width:220px}\n.dsh-hud-settings__file{font-size:12px;color:#9aa4b2;cursor:pointer}\n.dsh-hud-settings__foot{display:flex;justify-content:flex-end;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)}\n.dsh-hud-settings__reset{font:inherit;font-size:12px;padding:6px 12px;color:#ffb35c;background:transparent;border:1px solid rgba(255,143,31,.5);border-radius:2px;cursor:pointer}\n.dsh-hud-settings__reset:hover{background:rgba(255,143,31,.12)}";
+
     function HudSettings(props) {
       const t = props.t;
       const [config, setConfig] = React.useState(readHudConfig);
@@ -3188,6 +3192,16 @@ html:root body ::-webkit-scrollbar-thumb:active {
         window.addEventListener('paper-skin:hud', sync);
         return () => window.removeEventListener('paper-skin:hud', sync);
       }, []);
+
+      const hudEnabled = config.enabled !== false;
+      React.useEffect(() => {
+        if (hudEnabled) return undefined;
+        const style = document.createElement('style');
+        style.setAttribute('data-paper-skin-off-ui', '1');
+        style.textContent = HUD_SETTINGS_FALLBACK;
+        document.head.appendChild(style);
+        return () => style.remove();
+      }, [hudEnabled]);
 
       const update = (patch) => writeHudConfig(patch);
 
@@ -3294,6 +3308,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
       const host = document.createElement('div');
       host.className = 'dsh-hud-stats dsh-hud-inline';
       host.setAttribute('aria-hidden', 'true');
+      try { if (readHudConfig().enabled === false) host.style.display = 'none'; } catch (error) { /* private mode */ }
 
       const scan = document.createElement('span');
       scan.className = 'dsh-hud-stats__scan';
@@ -3980,6 +3995,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
             try { enabled = readHudConfig().enabled !== false; } catch (error) { /* private mode */ }
             style.disabled = !enabled;
             document.documentElement.classList.toggle('dsh-skin-off', !enabled);
+            document.querySelectorAll('.dsh-hud-stats').forEach((node) => { node.style.display = enabled ? '' : 'none'; });
             if (!enabled) {
               if (tokenDispose) { tokenDispose(); tokenDispose = null; }
               if (window.__paperSkin) window.__paperSkin.disabled = true;
