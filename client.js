@@ -3278,13 +3278,50 @@ html:root body ::-webkit-scrollbar-thumb:active {
     // no layout reads in the background.
     function startLoop(fn, ms) {
       let id = null;
-      const run = () => { if (document.hidden) return; try { fn(); } catch (error) {} };
+      const run = () => { if (document.hidden) return; try { if (document.querySelector('[class*="_overlay"]:has([class*="_navList"])')) return; fn(); } catch (error) {} };
       const start = () => { if (id === null) id = setInterval(run, ms); };
       const stop = () => { if (id !== null) { clearInterval(id); id = null; } };
       const onVisibility = () => { if (document.hidden) stop(); else start(); };
       document.addEventListener('visibilitychange', onVisibility);
       start();
       return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
+    }
+
+    // 设置弹窗内保护文本选中：后台 HUD 刷新/宿主重渲染可能把选区折叠掉。
+    // 只在设置弹窗打开时生效；用户鼠标/键盘操作会放行，不干扰正常选择与复制。
+    if (typeof document !== 'undefined') {
+      let savedRange = null;
+      let savedAt = 0;
+      let gestureAt = 0;
+      const markGesture = () => { gestureAt = Date.now(); };
+      document.addEventListener('mousedown', markGesture, true);
+      document.addEventListener('keydown', markGesture, true);
+      document.addEventListener('selectionchange', () => {
+        try {
+          const sel = window.getSelection();
+          if (!sel) return;
+          if (sel.rangeCount && !sel.isCollapsed) {
+            savedRange = sel.getRangeAt(0).cloneRange();
+            savedAt = Date.now();
+            return;
+          }
+          if (!savedRange || Date.now() - savedAt > 2500) return;
+          if (Date.now() - gestureAt < 350) return;
+          let inSettings = false;
+          try { inSettings = !!document.querySelector('[class*="_overlay"]:has([class*="_navList"])'); } catch (error) {}
+          if (!inSettings) return;
+          if (!savedRange.startContainer || !savedRange.startContainer.isConnected) return;
+          setTimeout(() => {
+            try {
+              const next = window.getSelection();
+              if (next && next.isCollapsed && Date.now() - gestureAt >= 350) {
+                next.removeAllRanges();
+                next.addRange(savedRange);
+              }
+            } catch (error) {}
+          }, 40);
+        } catch (error) {}
+      }, true);
     }
 
     // ── Flow HUD (plain DOM) ─────────────────────────────────────────────────
