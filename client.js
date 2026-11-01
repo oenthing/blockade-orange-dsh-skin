@@ -221,13 +221,12 @@ html:root body[data-ds-dark-theme] {
    the host's own [data-phase=active] state - no simulated status. */
 [data-slot="conversation.composer"] [class*="_card"] {
   position: relative;
-  transform: perspective(1200px) rotateY(-3.5deg) rotateX(0.8deg);
   transform-origin: 50% 50%;
   /* Frosted plate: light gradient + real backdrop blur, the material the
      reference menus use for their panels. */
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035));
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.10),
     inset 0 -1px 0 rgba(0, 0, 0, 0.35),
@@ -858,20 +857,7 @@ html:root body [data-chat-flow-kind] :not(pre) > code {
 
 /* Streaming: a light runs along the top edge while the answer is still being
    written. One loop, tied to real activity only. */
-@keyframes hud-stream-run {
-  from { background-position: -60% 0; }
-  to { background-position: 160% 0; }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  html:root body [data-streaming] {
-    background-image: linear-gradient(90deg, transparent 0%, rgba(255, 127, 0, 0.65) 50%, transparent 100%);
-    background-size: 60% 2px;
-    background-position: 160% 0;
-    background-repeat: no-repeat;
-    animation: hud-stream-run 1.8s linear infinite;
-  }
-}
 
 /* Respect the OS "reduce transparency" preference: blur is the expensive part,
    and a more opaque fill reads better for those users anyway. */
@@ -984,8 +970,8 @@ html:root body [data-slot="conversation.composer"] button[aria-label*="Send" i]:
 
 /* HUD status dot: breathes while a turn runs, double-flashes on error. */
 @keyframes hud-node-breathe {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 127, 0, 0.45); }
-  50% { opacity: 0.55; box-shadow: 0 0 0 4px rgba(255, 127, 0, 0); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 @keyframes hud-node-error {
@@ -2716,12 +2702,12 @@ html:root body .dsh-hud-stats {
   50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.50), 0 0 0 0.5px var(--dsw-alias-brand-primary), 0 0 18px rgba(255, 127, 0, 0.28), 4px 8px 18px rgba(0, 0, 0, 0.45); }
 }
 
-html:root body:has([data-phase="active"]) .dsh-hud-stats {
+html:root body[data-hud-live="1"] .dsh-hud-stats {
   animation: hud-live 2.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:root body:has([data-phase="active"]) .dsh-hud-stats { animation: none; }
+  html:root body[data-hud-live="1"] .dsh-hud-stats { animation: none; }
 }
 
 /* One-shot scan when the readouts actually change. */
@@ -2977,7 +2963,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
      whole column blinks. */
 
   /* The running-turn bar draws itself from the left instead of popping in. */
-  html:root body:has([data-phase="active"]) [class*="_centerCol"]::after {
+  html:root body[data-hud-live="1"] [class*="_centerCol"]::after {
     transform-origin: left center;
     animation: hud-tick-in 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
   }
@@ -3027,6 +3013,10 @@ html:root body ::-webkit-scrollbar-thumb:active {
       lights: true,         // the amber sweep over the contour background
       contours: true,       // the contour map itself; off leaves a clean canvas
       bg: '',               // custom background: a CSS image value or a data URL
+      fxShadow: true,       // heavy text shadows (turn off for lower CPU)
+      fxBlur: true,         // composer/menu backdrop blur (turn off for lower CPU)
+      fxSweep: true,        // sweep band + streaming light (turn off for lower CPU)
+      fxGlow: true,         // live-glow breathing on the stats panel (turn off for lower CPU)
     };
 
     const HUD_LEGACY_KEYS = ['paper-skin.hud.v8', 'paper-skin.hud.v7', 'paper-skin.hud.v6', 'paper-skin.hud.v5', 'paper-skin.hud.v4', 'paper-skin.hud.v3', 'paper-skin.hud.v2'];
@@ -3263,6 +3253,11 @@ html:root body ::-webkit-scrollbar-thumb:active {
         row('层级 · Layer', stepper('layer', 1, 200)),
         row('上移账号行 · Lift account', toggle('lift')),
         row('轻量模式 · Lite mode', toggle('lite')),
+        h('p', { className: 'dsh-hud-settings__hint' }, '重特效开关：默认开，关掉更省电。 · Heavy effects can be turned off to save CPU.'),
+        row('文字阴影 · Text shadow', toggle('fxShadow')),
+        row('背景模糊 · Backdrop blur', toggle('fxBlur')),
+        row('扫光/流光 · Sweep light', toggle('fxSweep')),
+        row('光晕呼吸 · Live glow', toggle('fxGlow')),
         h('div', { className: 'dsh-hud-settings__foot' },
           h('button', {
             type: 'button',
@@ -3278,7 +3273,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
     // no layout reads in the background.
     function startLoop(fn, ms) {
       let id = null;
-      const run = () => { if (document.hidden) return; try { fn(); } catch (error) {} };
+      const run = () => { if (document.hidden) return; if (document.documentElement.classList.contains('dsh-skin-off')) return; try { fn(); } catch (error) {} };
       const start = () => { if (id === null) id = setInterval(run, ms); };
       const stop = () => { if (id !== null) { clearInterval(id); id = null; } };
       const onVisibility = () => { if (document.hidden) stop(); else start(); };
@@ -3380,23 +3375,29 @@ html:root body ::-webkit-scrollbar-thumb:active {
           const numeric = parseFloat(entry.pair.value);
           const percent = unit === '%' && Number.isFinite(numeric) ? Math.max(0, Math.min(100, numeric)) : null;
 
-          if (slot.lastValue !== undefined && slot.lastValue !== entry.pair.value) {
+          const nextValue = entry.pair.value;
+          if (slot.lastValue !== undefined && slot.lastValue !== nextValue) {
             slot.value.classList.remove('is-rolling');
-            void slot.value.offsetWidth;   // restart the one-shot animation
+            const anims = slot.value.getAnimations ? slot.value.getAnimations() : [];
+            if (anims.length) {
+              anims.forEach((anim) => { try { anim.currentTime = 0; anim.play(); } catch (error) { /* noop */ } });
+            }
             slot.value.classList.add('is-rolling');
           }
-          slot.lastValue = entry.pair.value;
-          slot.value.textContent = entry.pair.value;
-          if (slot.unit) slot.unit.remove();
-          slot.unit = null;
-          if (!unitRight && unit) {
+          if (slot.lastValue !== nextValue) {
+            if (slot.unit) { slot.unit.remove(); slot.unit = null; }
+            slot.value.textContent = nextValue;
+          }
+          slot.lastValue = nextValue;
+          if (!unitRight && unit && !slot.unit) {
             slot.unit = document.createElement('span');
             slot.unit.className = 'dsh-hud-stats__unit';
             slot.unit.textContent = unit;
             slot.value.appendChild(slot.unit);
           }
           // Percent rows usually read "缓存命中 99.8%": keep the label.
-          slot.label.textContent = lead || (unitRight ? unit : '');
+          const labelText = lead || (unitRight ? unit : '');
+          if (slot.labelText !== labelText) { slot.label.textContent = labelText; slot.labelText = labelText; }
 
           if (percent !== null) {
             if (!slot.bar) {
@@ -3465,7 +3466,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
         observer.observe(column, { childList: true, subtree: true });
       };
       watch();
-      const stopLoop = startLoop(() => { watch(); tick(); }, 700);
+      const stopLoop = startLoop(() => { watch(); tick(); }, 1200);
       return () => {
         stopLoop();
         if (observer) observer.disconnect();
@@ -3528,7 +3529,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
 
           document.addEventListener('click', onClick, true);
           schedule();
-          const stopLoop = startLoop(schedule, 450);
+          const stopLoop = startLoop(schedule, 800);
           window.addEventListener('resize', schedule);
           return () => {
             document.removeEventListener('click', onClick, true);
@@ -3581,7 +3582,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
             else delete document.body.dataset.hudRightMoving;
           };
 
-          const stopLoop = startLoop(tick, 130);
+          const stopLoop = startLoop(tick, 400);
           tick();
           return () => {
             stopLoop();
@@ -3627,13 +3628,14 @@ html:root body ::-webkit-scrollbar-thumb:active {
 
           const findTail = () => {
             const active = document.querySelector('[data-phase="active"]');
-            if (!active) return null;
-            // Only paragraphs of the answer itself: tool cards and code blocks
-            // made the block jump around or sit inside a <pre>.
-            const blocks = Array.from(active.querySelectorAll('p')).filter((node) => (
-              !node.closest('[class*="_callRow"], pre, [class*="_toolCard"], [data-chat-flow-kind="turn-process"]')
-            ));
-            return blocks.length ? blocks[blocks.length - 1] : null;
+            if (!active) { delete document.body.dataset.hudLive; return null; }
+            document.body.dataset.hudLive = '1';
+            const blocks = active.querySelectorAll('p');
+            for (let i = blocks.length - 1; i >= 0 && i >= blocks.length - 4; i -= 1) {
+              const node = blocks[i];
+              if (!node.closest('[class*="_callRow"], pre, [class*="_toolCard"], [data-chat-flow-kind="turn-process"]')) return node;
+            }
+            return null;
           };
 
           const tick = () => {
@@ -3651,7 +3653,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
           };
 
           tick();
-          const stopLoop = startLoop(tick, 400);
+          const stopLoop = startLoop(tick, 600);
           return () => {
             stopLoop();
             cursor.remove();
@@ -3705,6 +3707,14 @@ html:root body ::-webkit-scrollbar-thumb:active {
           };
         });
 
+        ctx.effect(() => {
+          const el = document.createElement('style');
+          el.setAttribute('data-paper-skin-fx', '');
+          el.textContent = "/* Heavy-effect toggles (default on, same visuals as before). */\nhtml:root[data-hud-fx-shadow=\"off\"] body *{text-shadow:none!important}\nhtml:root[data-hud-fx-blur=\"off\"] body [class*=\"_card\"],\nhtml:root[data-hud-fx-blur=\"off\"] body [data-sidebar-right-panel],\nhtml:root[data-hud-fx-blur=\"off\"] body [class*=\"_overlay\"]:has([class*=\"_navList\"]) > [class*=\"_panel\"],\nhtml:root[data-hud-fx-blur=\"off\"] body [class*=\"_overlay\"]:has([class*=\"_navList\"]) [class*=\"_options\"]{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}\nhtml:root[data-hud-fx-sweep=\"off\"] .dsh-hud-sweep\nhtml:root[data-hud-fx-glow=\"off\"] body[data-hud-live=\"1\"] .dsh-hud-stats{animation:none!important}";
+          document.head.appendChild(el);
+          return () => el.remove();
+        });
+
         // Sweep light layer (replaces the old masked background animation).
         ctx.effect(() => {
           const layer = document.createElement('div');
@@ -3731,6 +3741,10 @@ html:root body ::-webkit-scrollbar-thumb:active {
             try { config = readHudConfig(); } catch (error) { /* private mode */ }
             if (config.lite) document.body.dataset.hudLite = 'true';
             else delete document.body.dataset.hudLite;
+            document.documentElement.dataset.hudFxShadow = config.fxShadow ? 'on' : 'off';
+            document.documentElement.dataset.hudFxBlur = config.fxBlur ? 'on' : 'off';
+            document.documentElement.dataset.hudFxSweep = config.fxSweep ? 'on' : 'off';
+            document.documentElement.dataset.hudFxGlow = config.fxGlow ? 'on' : 'off';
 
             // Background light: the sweep lives on html::after, so the flag goes
             // on the root element too.
