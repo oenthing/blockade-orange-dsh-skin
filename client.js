@@ -321,7 +321,7 @@ div:has(> [data-shell-overlay]) {
   background: transparent !important;
 }
 
-html:root body [class*="_sidebarCol"] {
+html:root:not([data-windows-titlebar]) body [class*="_sidebarCol"] {
   /* Turned inward from its outer edge, mirroring the right dock. */
   transform: perspective(1000px) rotateY(7deg) rotateX(0deg);
   transform-origin: 0% 50%;
@@ -1116,6 +1116,24 @@ html:root body button[aria-label="打开侧边栏"]:hover::after,
 html:root body button[aria-label="新建会话"]:hover::after,
 html:root body button[aria-label*="sidebar" i]:hover::after {
   opacity: 1;
+}
+
+/* Windows native titlebar: the host anchors the sidebar collapse/expand toggle
+   to the titlebar with position:fixed. Two things here drag it out of place:
+   the 3D tilt above turns the column into a containing block for fixed
+   descendants, and the relative positioning a few rules up overrides the
+   host's fixed rule. Keep the tilt off in that mode and pin the toggle where
+   the host expects it (titlebar's top-left), so collapsing the sidebar still
+   leaves a visible "open sidebar" button. */
+html:root[data-windows-titlebar] body button[aria-label="收起侧边栏"],
+html:root[data-windows-titlebar] body button[aria-label="打开侧边栏"],
+html:root[data-windows-titlebar] body button[aria-label="Collapse sidebar"],
+html:root[data-windows-titlebar] body button[aria-label="Open sidebar"] {
+  position: fixed;
+  left: 12px;
+  top: calc((var(--dsh-windows-titlebar-height, 40px) - 28px) / 2);
+  z-index: 30;
+  -webkit-app-region: no-drag;
 }
 
 /* Settings nav: no scroll rail. The list is short and the rail sat right next
