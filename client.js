@@ -3972,6 +3972,14 @@ html:root body ::-webkit-scrollbar-thumb:active {
           style.textContent = MATERIAL;
           document.head.appendChild(style);
 
+          // Keep the composer image remove control visible (orange) while the skin is
+          // enabled; html:not(.dsh-skin-off) restores the stock hover-only behavior when
+          // the skin is switched off.
+          const attachStyle = document.createElement('style');
+          attachStyle.setAttribute('data-paper-skin', 'attach-remove');
+          attachStyle.textContent = "/* 草稿截图右上角的“删除图片”按钮：DSH 默认只在缩略图 hover 时显示（opacity:0）。\n   开启皮肤后缩略图被外框与装饰包裹，按钮几乎不可见也不好点；这里让它常驻显示，\n   并改成封锁橙配色。作用域限定在皮肤启用状态，关皮肤后恢复原生 hover 行为。 */\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"移除图片\"],\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"Remove image\"] {\n  display: grid !important; place-items: center !important; position: absolute !important;\n  top: 4px !important; right: 4px !important; z-index: 4 !important;\n  width: 18px !important; height: 18px !important; padding: 0 !important;\n  opacity: 1 !important; visibility: visible !important; pointer-events: auto !important;\n  border-radius: 50% !important; border: 1px solid rgba(255,143,31,.9) !important;\n  background: rgba(10,11,14,.88) !important; color: #ff8f1f !important;\n  box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 8px rgba(255,143,31,.45) !important;\n  transition: background .15s ease, color .15s ease, box-shadow .15s ease !important;\n}\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"移除图片\"] svg,\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"Remove image\"] svg {\n  width: 12px !important; height: 12px !important;\n  color: #ff8f1f !important; fill: #ff8f1f !important; stroke: #ff8f1f !important;\n}\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"移除图片\"]:hover,\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"Remove image\"]:hover {\n  background: #ff8f1f !important; color: #0b0b0d !important;\n  box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 12px rgba(255,143,31,.75) !important;\n}\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"移除图片\"]:hover svg,\nhtml:root:not(.dsh-skin-off) body [data-slot=\"conversation.composer\"] [class*=\"imageItem\"] > button[aria-label^=\"Remove image\"]:hover svg {\n  color: #0b0b0d !important; fill: #0b0b0d !important; stroke: #0b0b0d !important;\n}";
+          document.head.appendChild(attachStyle);
+
           // Master switch: disabling the skin removes both its stylesheet and the
           // token override, so the stock interface comes back with no residue.
           let tokenDispose = null;
@@ -3996,6 +4004,7 @@ html:root body ::-webkit-scrollbar-thumb:active {
           return () => {
             window.removeEventListener('paper-skin:hud', syncEnabled);
             if (tokenDispose) tokenDispose();
+            attachStyle.remove();
             style.remove();
           };
         });
